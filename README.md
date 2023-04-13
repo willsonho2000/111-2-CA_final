@@ -3,6 +3,7 @@ This repository is created for the 111-2 Computational Astrophysics Final Projec
 
 Collaborators:
 * Meng Yuan, Ho (NTU)
+* Wei-An, Chen (NTU)
 
 ## First time to be here?
 1. Clone the master repo.
