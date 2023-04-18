@@ -2,6 +2,7 @@
 This repository is created for the 111-2 Computational Astrophysics Final Project.
 
 Team Name: Happy Tree Friends
+
 Topic: Tree Algorithm
 
 Collaborators:
