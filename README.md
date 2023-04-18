@@ -1,6 +1,9 @@
 # 111-2-CA_Final
 This repository is created for the 111-2 Computational Astrophysics Final Project.
 
+Team Name: Happy Tree Friends
+Topic: Tree Algorithm
+
 Collaborators:
 * Meng Yuan, Ho (NTU)
 * Wei-An, Chen (NTU)
