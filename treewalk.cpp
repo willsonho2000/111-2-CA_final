@@ -97,8 +97,6 @@ double* PotentialTarget_tree(double** pos_target, double* softening_target, tree
 
 
 int main(){
-    int *arr = fun();
-    cout << arr[0] << endl;
 
 
     return 0;
