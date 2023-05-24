@@ -38,19 +38,23 @@ int main() {
     //     for (int j = 0; j < 5; j++) {
     //         a[i][j] = i+j;
     //     }
-    // }
+    // }m
 
     // cout << sum(a) << "\n";
 
     int set[] = {1,2,3};
     Node a;
-    a = Node(-1, -2, -3, -1, -1);
-    cout << a.pos[0] * 2.5 << "\n";
+    a = Node(set, -1, -1.);
+    cout << a.pos[0] << "\n";
     Octree *b = new Octree();
 
-    cout << sizeof(b->Coordinate) << "\n";
-    cout << b->Coordinate[0] << "\n";
-    cout << b->node.mass << "\n";
+    cout << *b->Coordinate << "\n";
+    cout << (b->node == nullptr) << "\n";
+
+    cout << 2.4*2 << "\n";
+    srand (time(NULL));
+    int random = rand();
+    cout << random%100 / (double) 100 << "\n";
 
     return 0;
 }

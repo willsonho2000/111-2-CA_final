@@ -9,31 +9,26 @@ struct Node {
     double softening;
 
     Node();
-    Node(double* position, double m, double soft);
-    Node(double a, double b, double c, double m, double soft);
-    Node(int* position, double m, double soft);
-    Node(int a, int b, int c, double m, double soft);
+    Node( double* position, double m, double soft );
+    Node( double a, double b, double c, double m, double soft );
+    Node( int* position, double m, double soft );
+    // Node(int a, int b, int c, double m, double soft);
 };
 
 class Octree {
 public:
-    Node node;
+    Node* node;
     vector<Octree*> children;
     
-    int NumParticles;
-    int NumNodes;
-    int Sizes;
+    int NumNodes;       // how many particles the grid contain
+    double Sizes;       // the size of the grid
+    double* Coordinate; // the center of the grid
+    Octree* root;       // the root of the tree
 
-    double* Coordinate;
-    int* Deltas;
-    int* Masses;
+    Octree();                                   // initialization an empty tree
+    Octree( Node* root_node, Octree* root_ptr );    // initialize a new particle
 
-    Octree();   // initialization
-    Octree(Node* root_node, double* coord, double size);
-
-    void Insert(Node* new_node, int octant);
-    // maybe can just call it once
-    void BuildTree(double** points, double* masses, double* softenings, bool morton_order, bool quadrupole);
-    // decide wich quad the node will be inserted to
-    int FindQuad(double* pos, double* ref);
+    void Insert( Node* new_node, int octant );
+    void BuildTree( double** points, double* masses, double* softenings, bool morton_order, bool quadrupole ); // maybe can just call it once
+    int FindQuad( double* pos, double* ref );  // decide which quad the node will be inserted to
 };
