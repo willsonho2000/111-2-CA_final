@@ -19,15 +19,20 @@ public:
     Node* node;
     vector<Octree*> children;
     
-    int NumNodes;       // how many particles the grid contain
-    double Sizes;       // the size of the grid
-    double* Coordinate; // the center of the grid
-    Octree* root;       // the root of the tree
+    int NumNodes;           // how many particles the grid contain
+    double Sizes;           // the size of the grid
+    double* Coordinate;     // the center of the grid
+    Octree* root;           // the root of the tree
+    bool HasQuads;          // whether use quadrupole
+    double*** Quadrapoles;  // set quadrapoles
 
-    Octree();                                   // initialization an empty tree
+    // initialization an empty tree
+    Octree( double** points, double* masses, double* softening, bool morton_order, bool quadrupole );
     Octree( Node* root_node, Octree* root_ptr );    // initialize a new particle
 
     void Insert( Node* new_node, int octant );
-    void BuildTree( double** points, double* masses, double* softenings, bool morton_order, bool quadrupole ); // maybe can just call it once
+    void BuildTree( double** points, double* masses, double* softenings ); // maybe can just call it once
     int FindQuad( double* pos, double* ref );  // decide which quad the node will be inserted to
 };
+
+double* ComputeMonents(Octree* tree);

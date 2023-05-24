@@ -39,7 +39,7 @@ Node::Node( int* position, double m, double soft ) {
     softening = soft;
 }
 
-Octree::Octree() {
+Octree::Octree( double** points, double* masses, double* softening, bool morton_order=true, bool quadrupole=false ) {
     this->node = nullptr;
     // Assigning null to the children
     children.assign( 8, nullptr );
@@ -48,6 +48,11 @@ Octree::Octree() {
     this->Sizes = 0.;
     this->Coordinate = new double[3];
     this->root = this;
+    this->HasQuads = quadrupole;
+
+    this->BuildTree( points, masses, softening);
+    ComputeMonents( this );
+
 }
 
 Octree::Octree( Node* root_node, Octree* root_ptr ) {
@@ -96,7 +101,7 @@ void Octree::Insert( Node* new_node, int octant ) {
             double* cur_coord = this->Coordinate;
             double* child_coor = this->children[octant]->Coordinate;
             for ( int i = 0; i < 3; i++ ) 
-                child_coor[i] = cur_coord[i] + this->Sizes*0.25*(double)octant_offset[octant][i];
+                child_coor[i] = cur_coord[i] + this->Sizes*0.25*( double )octant_offset[octant][i];
 
             // put the pre-existing particle into the new tree
             int child_octant = FindQuad( child_node->pos, child_coor );
@@ -113,7 +118,6 @@ void Octree::Insert( Node* new_node, int octant ) {
         }
     }
     else {
-
         // the child doesn't exist, so let the particle be the child
         this->children[octant] = new Octree( new_node, this->root );
     }
@@ -121,11 +125,22 @@ void Octree::Insert( Node* new_node, int octant ) {
     this->NumNodes += 1;    // everytime we insert a node, parent's NumNodes + 1
 }
 
-void Octree::BuildTree( double** points, double* masses, double* softenings, bool morton_order=true, bool quadrapole=false ) {
+void Octree::BuildTree( double** points, double* masses, double* softenings ) {
+    
+    // initialization
+    int NumParticles = this->NumNodes = sizeof( points );
+    if ( this->HasQuads ) {
+        Quadrapoles = new double**[NumParticles];
+        for ( int i = 0; i < NumParticles; i++ ) {
+            Quadrapoles[i] = new double*[3];
+            for ( int j = 0; j < 3; j++ ) {
+                Quadrapoles[i][j] = new double[3];
+            }
+        }
+            
+    }
     
     // record the max and the min of x, y, z
-    int NumParticles = this->NumNodes = sizeof( points );
-    
     for ( int i = 0; i < 3; i++ ) {
 
         // record the max and the min of the given axis
@@ -164,4 +179,21 @@ int Octree::FindQuad( double* pos, double* ref ) {
         if ( pos[i] > ref[i] ) octant += 1 << i;
     
     return octant;
+}
+
+double* ComputeMonents(Octree* tree) {
+
+    // prepare for the necessary variable/array
+    int no = tree->NumNodes;
+
+    double** quad = new double*[3];
+    for ( int i = 0; i < 3; i++ ) quad[i] = new double[3];
+    double* ans = new double[4];
+
+    if ( tree->node != nullptr ) {
+        
+    }
+    else {
+
+    }
 }
