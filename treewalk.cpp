@@ -5,7 +5,6 @@
 #include <algorithm>
 using namespace std;
 
-const int N = 5; // number of particles
 
 double PotentialKernel(double r, double h)
 {
@@ -29,75 +28,73 @@ double PotentialKernel(double r, double h)
     {
         return -1./r;
     }
-    
 }
 
-double PotentialWalk_quad(double* pos, tree tree, double softening, double theta)
+double PotentialWalk_quad(double* pos, Octree* tree, double theta, double softening)
 {
-    int no = tree.NumParticles;
-    double phi = 0, dx[3] = {};
+    double phi = 0;
     double quad[3][3], r5inv;
 
-    while ( no > -1 )
+    double r=0, dx[3] = {};
+    for (int k=0; k<3; k++)
     {
-        double r=0;
-        for (int k=0; k<3; k++)
+        dx[k] = tree->Coordinates[k] - pos[k];
+        r+=dx[k]*dx[k];
+    }
+    r = sqrt(r); // distance between observer and the node
+
+    double h = fmax(tree->Softenings, softening); // softening length
+
+    bool IsParticle = true;
+    for (int octant=0; octant<8; octant++) // check whether the current node is particle
+    {
+        if ( tree->children[octant] != nullptr )
         {
-            dx[k] = tree.Coordinates[no][k] - pos[k];
-            r+=dx[k]*dx[k];
+            IsParticle = false;
+            break;
         }
-        r = sqrt(r);
-        double h = fmax(tree.Softenings[no], softening);
-        
-        if ( no < tree.NumParticles )
+    } // for (int octant=0; octant<8; octant++)
+
+    if ( IsParticle ) // it is a particle
+    {
+        if ( r > 0 )
         {
-            if ( r > 0 )
+            if ( r < h)
             {
-                if ( r < h)
-                {
-                    phi += tree.Masses[no] * PotentialKernel(r,h); 
-                }
-                else
-                {
-                    phi -= tree.Masses[no] / r;
-                } // if ( r < h)
-            } // if ( r > 0 )
-            no = tree.NextBranch[no];
-        } // if ( no < tree.NumParticles )
-        else if ( r > fmax(tree.Sizes[no]/theta + tree.Deltas[no], h+tree.Sizes[no]*0.6+tree.Deltas[no]) )
-        {
-            phi -= tree.Masses[no]/r;
-            copy(&tree.Quadrupoles[no][0][0], &tree.Quadrupoles[no][0][0] + 3 * 3, &quad[0][0]);
-            r5inv = 1 / pow(r, 5);
+                phi += tree->Masses * PotentialKernel(r,h); 
+            }
+            else
+            {
+                phi -= tree->Masses / r;
+            } // if ( r < h)
+        } // if ( r > 0 )
+    } // if ( IsParticle )
+    else if ( r > fmax(tree->Sizes/theta + tree->Deltas, h+tree->Sizes*0.6+tree->Deltas) ) // satisfy opening criteria
+    {
+        phi -= tree->Masses/r;
+        copy(&tree->Quadrupoles[0][0], &tree->Quadrupoles[0][0] + 3 * 3, &quad[0][0]);
+        r5inv = 1 / pow(r, 5);
 
-            for (int k=0; k<3; k++)
-            for (int l=0; l<3; l++)
-            phi -= 0.5 * dx[k] * quad[k][l] * dx[l] * r5inv;
-
-            no = tree.NextBranch[no];
-        } // else if ( r > fmax(tree.Sizes[no]/theta + tree.Deltas[no], h+tree.Sizes[no]*0.6+tree.Deltas[no]) )
-        else
-        {
-            no = tree.FirstSubnode[no];
-        } // else
-    } // while ( no > -1 )
+        for (int k=0; k<3; k++)
+        for (int l=0; l<3; l++)
+        phi -= 0.5 * dx[k] * quad[k][l] * dx[l] * r5inv;
+    } // else if ( r > fmax(tree->Sizes/theta + tree->Deltas, h+tree->Sizes*0.6+tree->Deltas) )
+    else
+    {
+        for (int octant=0; octant<8; octant++) // open the node
+        phi += PotentialWalk_quad(pos, tree->children[octant], theta, softening);
+    } // else
 
     return phi;
 }
 
-double* PotentialTarget_tree(double** pos_target, double* softening_target, tree tree, int G, double theta)
+double* PotentialTarget_tree(double** pos_target, double* softening_target, Octree* tree, int G, double theta)
 {
+    int N = sizeof(pos_target);
     double result[N];
 
     for (int i=0; i<N; i++)
     result[i] = G*PotentialWalk_quad(pos_target[i], tree, softening_target[i], theta);
 
     return result;
-}
-
-
-int main(){
-
-
-    return 0;
 }
