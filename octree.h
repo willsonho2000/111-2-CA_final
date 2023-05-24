@@ -12,7 +12,6 @@ struct Node {
     Node( double* position, double m, double soft );
     Node( double a, double b, double c, double m, double soft );
     Node( int* position, double m, double soft );
-    // Node(int a, int b, int c, double m, double soft);
 };
 
 class Octree {

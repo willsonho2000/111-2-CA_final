@@ -39,14 +39,6 @@ Node::Node( int* position, double m, double soft ) {
     softening = soft;
 }
 
-// Node::Node(int a, int b, int c, double m, double soft) {
-//     pos[0] = a;
-//     pos[1] = b;
-//     pos[2] = c;
-//     mass = m;
-//     softening = soft;
-// }
-
 Octree::Octree() {
     this->node = nullptr;
     // Assigning null to the children
@@ -83,9 +75,12 @@ void Octree::Insert( Node* new_node, int octant ) {
             
             // restart the tree traversal (back to the root of the tree)
             if ( same_cood ) {
-                for ( int i = 0; i < 3; i++ ) 
-                    new_node->pos[i] *= exp( 3e-16 );
+                srand (time(NULL));
+                for ( int i = 0; i < 3; i++ ) {
+                    new_node->pos[i] *= exp( 3e-16 * ((double) rand() / (RAND_MAX) - 0.5) );
+                }
 
+                // insert from the root 
                 int new_octant = FindQuad( new_node->pos, this->root->Coordinate );
                 this->root->Insert( new_node, new_octant );
             } // end exception

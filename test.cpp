@@ -14,21 +14,6 @@ int sum(int** arr) {
     return sum;
 }
 
-// struct Node {
-//     double pos[3];
-//     double mass;
-//     double softening;
-
-//     Node();
-//     // Node(double a, double b, double c, double m, double soft);
-// };
-
-// Node::Node() {
-//     pos[0] = pos[1] = pos[2] = -1.;
-//     mass = -1.;
-//     softening = -1.;
-// }
-
 int main() {
     // int** a;
     // a = new int* [5];
@@ -53,8 +38,11 @@ int main() {
 
     cout << 2.4*2 << "\n";
     srand (time(NULL));
-    int random = rand();
-    cout << random%100 / (double) 100 << "\n";
+    // int random = rand();
+    for (int i = 0; i < 5; i++)
+        cout << ((double) rand() / (RAND_MAX) - 0.5) << " ";
+
+    cout << "\n";
 
     return 0;
 }
