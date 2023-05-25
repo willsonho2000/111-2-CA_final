@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <math.h>
 #include <algorithm>
+#include "octree.h"
 using namespace std;
 
 void ComputeMoments(double* mass, double* com, double** quad, double* hmax, Octree* tree)
