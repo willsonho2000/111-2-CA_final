@@ -26,8 +26,8 @@ public:
     double Masses;          // set masses
 
     Octree* root;           // the root of the tree
-    double* Coordinate;     // the center of the grid
-    double** Quadrapoles;   // set quadrapoles
+    double* Coordinates;     // the center of the grid
+    double** Quadrupoles;   // set quadrapoles
 
     // initialization an empty tree
     Octree( double** points, double* masses, double* softening, bool morton_order, bool quadrupole );

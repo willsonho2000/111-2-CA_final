@@ -45,7 +45,7 @@ Octree::Octree( double** points, double* masses, double* softening, bool morton_
     children.assign( 8, nullptr );
 
     this->root = this;
-    this->Coordinate = new double[3]{0.};
+    this->Coordinates = new double[3]{0.};
     this->NumNodes = 0;
     this->Sizes = 0.;
     this->Softenings = 0.;
@@ -85,20 +85,20 @@ void Octree::Insert( Particle* new_par, int octant ) {
                 }
 
                 // insert from the root 
-                int new_octant = FindQuad( new_par->pos, this->root->Coordinate );
+                int new_octant = FindQuad( new_par->pos, this->root->Coordinates );
                 this->root->Insert( new_par, new_octant );
             } // end exception
 
             // turn the node to a tree
             this->children[octant]->par = nullptr;
 
-            // set the tree coordinate and sizes
+            // set the tree Coordinates and sizes
             this->children[octant]->Sizes = this->Sizes/2.;
-            this->children[octant]->Coordinate = new double[3];
+            this->children[octant]->Coordinates = new double[3];
 
-            // set the value of coordinate
-            double* cur_coord = this->Coordinate;
-            double* child_coor = this->children[octant]->Coordinate;
+            // set the value of Coordinates
+            double* cur_coord = this->Coordinates;
+            double* child_coor = this->children[octant]->Coordinates;
             for ( int i = 0; i < 3; i++ ) 
                 child_coor[i] = cur_coord[i] + this->Sizes*0.25*( double )octant_offset[octant][i];
 
@@ -112,7 +112,7 @@ void Octree::Insert( Particle* new_par, int octant ) {
 
         } // it's a tree, then pass the node to that tree
         else {
-            int next_octant = FindQuad( new_par->pos, this->children[octant]->Coordinate );
+            int next_octant = FindQuad( new_par->pos, this->children[octant]->Coordinates );
             this->children[octant]->Insert( new_par, next_octant );
         }
     }
@@ -128,9 +128,9 @@ void Octree::BuildTree( double** points, double* masses, double* softenings ) {
     
     // initialization
     int NumParticles = this->NumNodes = sizeof( points );
-    this->Quadrapoles = new double*[3];
+    this->Quadrupoles = new double*[3];
     for ( int i = 0; i < NumParticles; i++ ) 
-        Quadrapoles[i] = new double[3];
+        Quadrupoles[i] = new double[3];
     
     // record the max and the min of x, y, z
     for ( int i = 0; i < 3; i++ ) {
@@ -146,7 +146,7 @@ void Octree::BuildTree( double** points, double* masses, double* softenings ) {
         }
 
         // save properties of the grid size and the center of the position
-        this->Coordinate[i] = 0.5 * ( i_max + i_min );
+        this->Coordinates[i] = 0.5 * ( i_max + i_min );
         if ( i_max - i_min > this->Sizes ) 
             this->Sizes = i_max - i_min;
     }
@@ -158,7 +158,7 @@ void Octree::BuildTree( double** points, double* masses, double* softenings ) {
         // delcare a new node then insert it
         Particle* i_par = new Particle( pos, masses[i], softenings[i] );
         
-        int i_octant = FindQuad( pos, this->Coordinate );
+        int i_octant = FindQuad( pos, this->Coordinates );
         this->Insert( i_par, i_octant );
     }
 }
