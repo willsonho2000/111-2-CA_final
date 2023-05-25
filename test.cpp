@@ -27,14 +27,14 @@ int main() {
 
     // cout << sum(a) << "\n";
 
-    int set[] = {1,2,3};
-    Node a;
-    a = Node(set, -1, -1.);
+    int set[] = { 1,2,3 };
+    Particle a;
+    a = Particle( set, -1, -1. );
     cout << a.pos[0] << "\n";
-    Octree *b = new Octree();
+    // Octree *b = new Octree();
 
-    cout << *b->Coordinate << "\n";
-    cout << (b->node == nullptr) << "\n";
+    // cout << *b->Coordinates << "\n";
+    // cout << (b->node == nullptr) << "\n";
 
     cout << 2.4*2 << "\n";
     srand (time(NULL));
