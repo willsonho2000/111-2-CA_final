@@ -50,9 +50,8 @@ Octree::Octree( double** points, double* masses, double* softening, bool morton_
     this->Sizes = 0.;
     this->Softenings = 0.;
     this->Masses = 0.;
-    this->HasQuads = quadrupole;
 
-    this->BuildTree( points, masses, softening);
+    this->BuildTree( points, masses, softening );
 }
 
 Octree::Octree( Particle* root_par, Octree* root_ptr ) {
@@ -129,11 +128,9 @@ void Octree::BuildTree( double** points, double* masses, double* softenings ) {
     
     // initialization
     int NumParticles = this->NumNodes = sizeof( points );
-    if ( this->HasQuads ) {
-        Quadrapoles = new double*[3];
-        for ( int i = 0; i < NumParticles; i++ ) 
-            Quadrapoles[i] = new double[3];
-    }
+    this->Quadrapoles = new double*[3];
+    for ( int i = 0; i < NumParticles; i++ ) 
+        Quadrapoles[i] = new double[3];
     
     // record the max and the min of x, y, z
     for ( int i = 0; i < 3; i++ ) {
@@ -175,35 +172,3 @@ int Octree::FindQuad( double* pos, double* ref ) {
     
     return octant;
 }
-
-// void ComputeMoments( Octree* tree, double* h, double* m, double** quad, double* com ) {
-
-//     // prepare for the necessary variable/array
-//     int no = tree->Nums;
-
-//     // double** quad;
-//     // double* hi;
-//     // double* mi;
-//     // double
-//     // for ( int i = 0; i < 3; i++ ) quad[i] = new double[3];
-
-//     if ( tree->node != nullptr ) {
-//         h = &tree->node->softening;
-//         m = &tree->node->mass;
-//         quad = nullptr;
-//         com = tree->node->pos;
-
-//         return;
-//     }
-//     else {
-//         double* m = new double;
-//         double* comi = new double[3];
-//         double hmax = 0;
-
-//         for ( auto i: tree->children ) {
-//             if ( i->node == nullptr ) {
-
-//             }
-//         }
-//     }
-// }

@@ -24,7 +24,6 @@ public:
     double Deltas;          // set deltas
     double Softenings;      // set softentings
     double Masses;          // set masses
-    bool HasQuads;          // whether use quadrupole
 
     Octree* root;           // the root of the tree
     double* Coordinate;     // the center of the grid
