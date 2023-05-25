@@ -14,21 +14,6 @@ int sum(int** arr) {
     return sum;
 }
 
-// struct Node {
-//     double pos[3];
-//     double mass;
-//     double softening;
-
-//     Node();
-//     // Node(double a, double b, double c, double m, double soft);
-// };
-
-// Node::Node() {
-//     pos[0] = pos[1] = pos[2] = -1.;
-//     mass = -1.;
-//     softening = -1.;
-// }
-
 int main() {
     // int** a;
     // a = new int* [5];
@@ -37,20 +22,26 @@ int main() {
     //     a[i] = new int [5];
     //     for (int j = 0; j < 5; j++) {
     //         a[i][j] = i+j;
-    //     }
     // }
 
     // cout << sum(a) << "\n";
 
     int set[] = {1,2,3};
     Node a;
-    a = Node(-1, -2, -3, -1, -1);
-    cout << a.pos[0] * 2.5 << "\n";
+    a = Node(set, -1, -1.);
+    cout << a.pos[0] << "\n";
     Octree *b = new Octree();
 
-    cout << sizeof(b->Coordinate) << "\n";
-    cout << b->Coordinate[0] << "\n";
-    cout << b->node.mass << "\n";
+    cout << *b->Coordinate << "\n";
+    cout << (b->node == nullptr) << "\n";
+
+    cout << 2.4*2 << "\n";
+    srand (time(NULL));
+    // int random = rand();
+    for (int i = 0; i < 5; i++)
+        cout << ((double) rand() / (RAND_MAX) - 0.5) << " ";
+
+    cout << "\n";
 
     return 0;
 }
