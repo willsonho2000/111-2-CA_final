@@ -44,10 +44,12 @@ Octree::Octree( double** points, double* masses, double* softening, bool morton_
     // Assigning null to the children
     children.assign( 8, nullptr );
 
+    this->root = this;
+    this->Coordinate = new double[3]{0.};
     this->NumNodes = 0;
     this->Sizes = 0.;
-    this->Coordinate = new double[3];
-    this->root = this;
+    this->Softenings = 0.;
+    this->Masses = 0.;
     this->HasQuads = quadrupole;
 
     this->BuildTree( points, masses, softening);

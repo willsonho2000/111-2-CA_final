@@ -21,14 +21,14 @@ public:
     
     int NumNodes;           // how many particles the grid contain
     double Sizes;           // the size of the grid
+    double Deltas;          // set deltas
+    double Softenings;      // set softentings
+    double Masses;          // set masses
     bool HasQuads;          // whether use quadrupole
 
     Octree* root;           // the root of the tree
     double* Coordinate;     // the center of the grid
     double** Quadrapoles;   // set quadrapoles
-    double* Deltas;         // set deltas
-    double* Softenings;     // set softentings
-    double* Masses;         // set masses
 
     // initialization an empty tree
     Octree( double** points, double* masses, double* softening, bool morton_order, bool quadrupole );
