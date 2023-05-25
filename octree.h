@@ -3,36 +3,40 @@
 
 using namespace std;
 
-struct Node {
+struct Particle {
     double pos[3];
     double mass;
     double softening;
 
-    Node();
-    Node( double* position, double m, double soft );
-    Node( double a, double b, double c, double m, double soft );
-    Node( int* position, double m, double soft );
+    Particle();
+    Particle( double* position, double m, double soft );
+    Particle( double a, double b, double c, double m, double soft );
+    Particle( int* position, double m, double soft );
 };
 
 class Octree {
 public:
-    Node* node;
+    Particle* par;
     vector<Octree*> children;
     
     int NumNodes;           // how many particles the grid contain
     double Sizes;           // the size of the grid
-    double* Coordinate;     // the center of the grid
-    Octree* root;           // the root of the tree
     bool HasQuads;          // whether use quadrupole
-    double*** Quadrapoles;  // set quadrapoles
+
+    Octree* root;           // the root of the tree
+    double* Coordinate;     // the center of the grid
+    double** Quadrapoles;   // set quadrapoles
+    double* Deltas;         // set deltas
+    double* Softenings;     // set softentings
+    double* Masses;         // set masses
 
     // initialization an empty tree
     Octree( double** points, double* masses, double* softening, bool morton_order, bool quadrupole );
-    Octree( Node* root_node, Octree* root_ptr );    // initialize a new particle
+    Octree( Particle* root_par, Octree* root_ptr );    // initialize a new particle
 
-    void Insert( Node* new_node, int octant );
+    void Insert( Particle* new_par, int octant );
     void BuildTree( double** points, double* masses, double* softenings ); // maybe can just call it once
-    int FindQuad( double* pos, double* ref );  // decide which quad the node will be inserted to
+    int FindQuad( double* pos, double* ref );  // decide which quad the particle will be inserted to
 };
 
-double* ComputeMonents(Octree* tree);
+// void ComputeMoments(Octree* tree, double* h, double* m, double** quad, double* com );
