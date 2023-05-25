@@ -46,7 +46,7 @@ double PotentialWalk_quad(double* pos, Octree* tree, double theta, double soften
     double h = fmax(tree->Softenings, softening); // softening length
 
     bool IsParticle = true;
-    if ( tree->node = nullptr )   IsParticle = false;
+    if ( tree->node == nullptr )   IsParticle = false;
 
     if ( IsParticle ) // it is a particle
     {
