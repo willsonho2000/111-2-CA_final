@@ -42,5 +42,12 @@ int main(int argc, char* argv[]){
         printf("%13.7e %13.7e %13.7e %13.7e %13.7e\n", pos[i][0], pos[i][1], pos[i][2], m[i], h[i]);
     }
 
+    delete[] m;
+    delete[] h;
+    for(int i = 0; i < Npar; i++){
+        delete[] pos[i];
+    }
+    delete[] pos;
+
     return 0;
 }
