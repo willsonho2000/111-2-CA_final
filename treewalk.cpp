@@ -26,9 +26,9 @@ void ComputeMoments(double* mass, double* com, double** quad, double* hmax, Octr
 
     if ( IsParticle )
     {
-        mass = tree->par->mass;
-        com  = tree->par->pos;
-        hmax = tree->par->softening;
+        mass = &(tree->par->mass);
+        com  =   tree->par->pos;
+        hmax = &(tree->par->softening);
     }
     else // it is a node
     {
@@ -45,16 +45,17 @@ void ComputeMoments(double* mass, double* com, double** quad, double* hmax, Octr
             for (int i = 0; i < 3; i++) com0[i] += (*massi)*comi[i];
         } // for (int octant=0; octant<8; octant++)
 
-        tree->Masses = mass = &m0;
+        mass         = &m0;
         for (int i = 0; i < 3; i++) com[i] = com0[i]/m0;
+        hmax         = &hmax0;
 
         for (int octant=0; octant<8; octant++) // open the node to calculate quadrapoles from children
         {
             double* ri = new double[3];
             double  r2 = (double)0;
 
-            comi  = tree->children[octant]->Coordinate;
-            quadi = tree->children[octant]->Quadrapoles;
+            comi  = tree->children[octant]->Coordinates;
+            quadi = tree->children[octant]->Quadrupoles;
 
             for (int i = 0; i < 3; i++) ri[i] = comi[i] - com[i];
             for (int i = 0; i < 3; i++) r2 += ri[i]*ri[i];
@@ -69,8 +70,6 @@ void ComputeMoments(double* mass, double* com, double** quad, double* hmax, Octr
             delete[] ri;
         } // for (int octant=0; octant<8; octant++)
 
-        tree->Quadrapoles = quad;
-
         double delta = (double)0;
         for (int dim=0; dim<3; dim++)
         {
@@ -78,9 +77,12 @@ void ComputeMoments(double* mass, double* com, double** quad, double* hmax, Octr
             delta += pow(dx, 2);
         } // for (int dim=0; dim<3; dim++)
 
-        tree->Deltas      = sqrt(delta);
+        // update tree properties
+        tree->Masses      = m0;
         tree->Coordinates = com;
-        tree->Softening   = hmax = &hmax0;
+        tree->Softenings  = hmax0;
+        tree->Quadrupoles = quad;
+        tree->Deltas      = sqrt(delta);
     }
 
     for(int i = 0; i < 3; i++){
