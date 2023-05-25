@@ -22,8 +22,7 @@ int main() {
     //     a[i] = new int [5];
     //     for (int j = 0; j < 5; j++) {
     //         a[i][j] = i+j;
-    //     }
-    // }m
+    // }
 
     // cout << sum(a) << "\n";
 

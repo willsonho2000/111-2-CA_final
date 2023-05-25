@@ -37,5 +37,3 @@ public:
     void BuildTree( double** points, double* masses, double* softenings ); // maybe can just call it once
     int FindQuad( double* pos, double* ref );  // decide which quad the particle will be inserted to
 };
-
-// void ComputeMoments(Octree* tree, double* h, double* m, double** quad, double* com );

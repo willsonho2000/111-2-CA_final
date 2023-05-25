@@ -13,11 +13,13 @@ int octant_offset[8][3] =  {{-1,-1,-1},
                             {-1,1,1},
                             {1,1,1}};
 
+
 Particle::Particle() {
     pos[0] = pos[1] = pos[2] = 0.;
     mass = -1.;
     softening = -1.;
 }
+
 
 Particle::Particle( double* position, double m, double soft ) {
     for ( int i = 0; i < 3; i++ ) pos[i] = position[i];
@@ -39,6 +41,7 @@ Particle::Particle( int* position, double m, double soft ) {
     softening = soft;
 }
 
+// initialization
 Octree::Octree( double** points, double* masses, double* softening, bool morton_order=true, bool quadrupole=false ) {
     this->par = nullptr;
     // Assigning null to the children
