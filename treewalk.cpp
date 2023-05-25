@@ -26,7 +26,7 @@ void ComputeMoments(double* mass, double* com, double** quad, double* hmax, Octr
     if ( IsParticle )
     {
         mass = tree->par->mass;
-        com = tree->par->pos;
+        com  = tree->par->pos;
         hmax = tree->par->softening;
     }
     else // it is a node
