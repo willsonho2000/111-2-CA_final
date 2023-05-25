@@ -3,8 +3,94 @@
 #include <cstdlib>
 #include <math.h>
 #include <algorithm>
+#include "octree.h"
 using namespace std;
 
+void ComputeMoments(double* mass, double* com, double** quad, double* hmax, Octree* tree)
+{
+    // #####################
+    // Note:
+    // 1. quad is intitially 0
+    // #####################
+
+    bool IsParticle = true; // checking whether the current node is a particle
+    if ( tree->par == nullptr )   IsParticle = false;
+
+    double* hmaxi; // some properties for the child
+    double* massi;
+    double*  comi  = new double[3]{0};
+    double** quadi = new double*[3];
+    for (int i = 0; i < 3; i++)  quadi[i] = new double[3]{0};
+
+    quad = quadi; // empty
+
+    if ( IsParticle )
+    {
+        mass = &(tree->par->mass);
+        com  =   tree->par->pos;
+        hmax = &(tree->par->softening);
+    }
+    else // it is a node
+    {
+        double hmax0   = 0; // some properties for the node
+        double m0      = 0; // total mass
+        double com0[3] = {}; // used to calculate COM of the node
+
+        for (int octant=0; octant<8; octant++) // open the node to calculate the total mass and COM position
+        {
+            ComputeMoments(massi, comi, quadi, hmaxi, tree->children[octant]);
+
+            hmax0 = max(hmax0, *hmaxi);
+            m0 += *massi;
+            for (int i = 0; i < 3; i++) com0[i] += (*massi)*comi[i];
+        } // for (int octant=0; octant<8; octant++)
+
+        mass         = &m0;
+        for (int i = 0; i < 3; i++) com[i] = com0[i]/m0;
+        hmax         = &hmax0;
+
+        for (int octant=0; octant<8; octant++) // open the node to calculate quadrapoles from children
+        {
+            double* ri = new double[3];
+            double  r2 = (double)0;
+
+            comi  = tree->children[octant]->Coordinates;
+            quadi = tree->children[octant]->Quadrupoles;
+
+            for (int i = 0; i < 3; i++) ri[i] = comi[i] - com[i];
+            for (int i = 0; i < 3; i++) r2 += ri[i]*ri[i];
+
+            for (int k = 0; k < 3; k++)
+            for (int l = 0; l < 3; l++)
+            {
+                quad[k][l] += quadi[k][l] + tree->children[octant]->Masses*3*ri[k]*ri[l];
+                if ( k==l ) quad[k][l] -= tree->children[octant]->Masses*r2;
+            } // l, k
+
+            delete[] ri;
+        } // for (int octant=0; octant<8; octant++)
+
+        double delta = (double)0;
+        for (int dim=0; dim<3; dim++)
+        {
+            double dx = com[dim] - tree->Coordinates[dim];
+            delta += pow(dx, 2);
+        } // for (int dim=0; dim<3; dim++)
+
+        // update tree properties
+        tree->Masses      = m0;
+        tree->Coordinates = com;
+        tree->Softenings  = hmax0;
+        tree->Quadrupoles = quad;
+        tree->Deltas      = sqrt(delta);
+    }
+
+    for(int i = 0; i < 3; i++){
+        delete[] quadi[i];
+    }
+    delete[] quadi;
+    delete[] comi;
+}
 
 double PotentialKernel(double r, double h)
 {
@@ -45,15 +131,8 @@ double PotentialWalk_quad(double* pos, Octree* tree, double theta, double soften
 
     double h = fmax(tree->Softenings, softening); // softening length
 
-    bool IsParticle = true;
-    for (int octant=0; octant<8; octant++) // check whether the current node is particle
-    {
-        if ( tree->children[octant] != nullptr )
-        {
-            IsParticle = false;
-            break;
-        }
-    } // for (int octant=0; octant<8; octant++)
+    bool IsParticle = true; // checking whether the current node is a particle
+    if ( tree->par == nullptr )   IsParticle = false;
 
     if ( IsParticle ) // it is a particle
     {
