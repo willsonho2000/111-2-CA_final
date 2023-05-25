@@ -45,7 +45,7 @@ Octree::Octree( double** points, double* masses, double* softening, bool morton_
     children.assign( 8, nullptr );
 
     this->root = this;
-    this->Coordinates = new double[3]{0.};
+    this->Coordinates = new double[3];
     this->NumNodes = 0;
     this->Sizes = 0.;
     this->Softenings = 0.;
