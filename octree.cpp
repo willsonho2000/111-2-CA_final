@@ -94,6 +94,8 @@ void Octree::Insert( Particle* new_par, int octant ) {
                 // insert from the root 
                 int new_octant = FindQuad( new_par->pos, this->root->Coordinates );
                 this->root->Insert( new_par, new_octant );
+
+                return;
             } // end exception
 
             // turn the node to a tree
