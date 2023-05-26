@@ -43,6 +43,7 @@ void ComputeMoments(double* mass, double* com, double** quad, double* hmax, Octr
 
         for ( int octant=0; octant<8; octant++ ) // open the node to calculate the total mass and COM position
         {
+            if ( tree->children[octant] == nullptr ) continue;
             ComputeMoments( massi, comi, quadi, hmaxi, tree->children[octant] );
 
             hmax0 = max( hmax0, *hmaxi );
