@@ -7,7 +7,7 @@
 #include "treewalk.h"
 using namespace std;
 
-void ComputeMoments(double* mass, double* com, double** quad, double* hmax, Octree* tree)
+void ComputeMoments( double* mass, double* com, double** quad, double* hmax, Octree* tree )
 {
     // #####################
     // Note:
@@ -56,6 +56,8 @@ void ComputeMoments(double* mass, double* com, double** quad, double* hmax, Octr
 
         for ( int octant=0; octant<8; octant++ ) // open the node to calculate quadrapoles from children
         {
+            if ( tree->children[octant] == nullptr ) continue;
+            
             double ri[3]{0.};
             double r2 = (double)0;
 
