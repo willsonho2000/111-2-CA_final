@@ -19,7 +19,7 @@ for i in range(N):
 f.close()
 
 # Store reference potential
-p = Potential(pos,m,h)
+p = Potential(pos,m,h,method='bruteforce')
 f = open("./Ref.dat", "w")
 
 for i in range(N):
