@@ -43,7 +43,7 @@ Particle::Particle( int* position, double m, double soft ) {
 }
 
 // initialization
-Octree::Octree( double** points, double* masses, double* softening, bool morton_order=true, bool quadrupole=false ) {
+Octree::Octree( double** points, double* masses, double* softening, bool quadrupole=false ) {
     this->par = nullptr;
     // Assigning null to the children
     children.assign( 8, nullptr );

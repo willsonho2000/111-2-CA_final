@@ -30,7 +30,7 @@ public:
     double** Quadrupoles;   // set quadrapoles
 
     // initialization an empty tree
-    Octree( double** points, double* masses, double* softening, bool morton_order, bool quadrupole );
+    Octree( double** points, double* masses, double* softening, bool quadrupole );
     Octree( Particle* root_par, Octree* root_ptr );    // initialize a new particle
 
     void Insert( Particle* new_par, int octant );
