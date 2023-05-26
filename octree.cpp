@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "octree.h"
+#include "treewalk.h"
 
 using namespace std;
 
@@ -48,13 +49,16 @@ Octree::Octree( double** points, double* masses, double* softening, bool morton_
     children.assign( 8, nullptr );
 
     this->root = this;
-    this->Coordinates = new double[3];
+    this->Coordinates = new double[3]{0};
     this->NumNodes = 0;
     this->Sizes = 0.;
     this->Softenings = 0.;
     this->Masses = 0.;
 
     this->BuildTree( points, masses, softening );
+    double *mass, *com, *hmax; 
+    double** quad;
+    ComputeMoments( mass, com, quad, hmax, this );
 }
 
 Octree::Octree( Particle* root_par, Octree* root_ptr ) {
@@ -97,7 +101,7 @@ void Octree::Insert( Particle* new_par, int octant ) {
 
             // set the tree Coordinates and sizes
             this->children[octant]->Sizes = this->Sizes/2.;
-            this->children[octant]->Coordinates = new double[3];
+            this->children[octant]->Coordinates = new double[3]{0};
 
             // set the value of Coordinates
             double* cur_coord = this->Coordinates;
@@ -131,9 +135,6 @@ void Octree::BuildTree( double** points, double* masses, double* softenings ) {
     
     // initialization
     int NumParticles = this->NumNodes = sizeof( points );
-    this->Quadrupoles = new double*[3];
-    for ( int i = 0; i < NumParticles; i++ ) 
-        Quadrupoles[i] = new double[3];
     
     // record the max and the min of x, y, z
     for ( int i = 0; i < 3; i++ ) {

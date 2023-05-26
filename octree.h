@@ -26,7 +26,7 @@ public:
     double Masses;          // set masses
 
     Octree* root;           // the root of the tree
-    double* Coordinates;     // the center of the grid
+    double* Coordinates;    // the center of the grid
     double** Quadrupoles;   // set quadrapoles
 
     // initialization an empty tree

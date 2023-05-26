@@ -1,5 +1,5 @@
-all: octree.cpp test.cpp
-	g++ octree.cpp test.cpp -o test.out
+all: octree.cpp treewalk.cpp test.cpp
+	g++-12 octree.cpp treewalk.cpp test.cpp -o test.out
 	./test.out
 
 clean:

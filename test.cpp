@@ -1,5 +1,5 @@
 #include <iostream>
-#include "octree.h"
+// #include "octree.h"
 
 using namespace std;
 
@@ -26,22 +26,27 @@ int main() {
 
     // cout << sum(a) << "\n";
 
-    int set[] = { 1,2,3 };
-    Particle a;
-    a = Particle( set, -1, -1. );
-    cout << a.pos[0] << "\n";
+    // int set[] = { 1,2,3 };
+    // Particle a;
+    // a = Particle( set, -1, -1. );
+    // cout << a.pos[0] << "\n";
     // Octree *b = new Octree();
 
     // cout << *b->Coordinates << "\n";
     // cout << (b->node == nullptr) << "\n";
 
-    cout << 2.4*2 << "\n";
+    std::cout << 2.4*2 << "\n";
     srand (time(NULL));
     // int random = rand();
     for (int i = 0; i < 5; i++)
-        cout << ((double) rand() / (RAND_MAX) - 0.5) << " ";
+        std::cout << ((double) rand() / (RAND_MAX) - 0.5) << " ";
 
-    cout << "\n";
+    std::cout << "\n";
+
+    double* b;
+    b = new double[3]{0};
+
+    std::cout << b[0] << "\n";
 
     return 0;
 }
