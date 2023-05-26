@@ -4,6 +4,7 @@
 #include <math.h>
 #include <algorithm>
 #include "octree.h"
+#include "treewalk.h"
 using namespace std;
 
 void ComputeMoments(double* mass, double* com, double** quad, double* hmax, Octree* tree)
@@ -173,7 +174,7 @@ double PotentialWalk_quad(double* pos, Octree* tree, double theta, double soften
 double* PotentialTarget_tree(double** pos_target, double* softening_target, Octree* tree, int G, double theta)
 {
     int N = sizeof(pos_target);
-    double result[N];
+    double* result = new double[N];
 
     for (int i=0; i<N; i++)
     result[i] = G*PotentialWalk_quad(pos_target[i], tree, softening_target[i], theta);
