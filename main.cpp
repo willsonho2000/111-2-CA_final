@@ -29,11 +29,32 @@ void ReadPar(int Npar,double** pos, double* m, double* h, string input)
     return;
 }
 
+void WritePot(double *phi, int Npar, string output)
+{
+    ofstream out;
+    out.open(output);
+    out << scientific; // using scientific notation
+	for (int i = 0; i < Npar; ++i) {
+        if ( i != Npar-1 )
+        {
+            out << phi[i] << endl;
+        }
+        else
+        {
+            out << phi[i];
+        }
+        
+	}
+    out.close();
+}
+
 int main( int argc, char* argv[] ) {
     // Use ./main.out ./Particle.dat
     // Basic settings
     string input = argv[1];
-    const int Npar = 10;
+    const int    Npar  =  10;
+    const int    G     =   1;
+    const double theta = 0.7;
 
     // Declare particle's properties
     double** pos = new double*[Npar];
@@ -46,6 +67,14 @@ int main( int argc, char* argv[] ) {
     ReadPar(Npar,pos, m, h, input);
 
     Octree* tree = new Octree( Npar, pos, m, h, true );
+
+    // Declare the array to store the potential
+    double* phi = new double[Npar];
+
+    phi = PotentialTarget_tree(Npar, pos, h, tree, G, theta);
+
+    WritePot(phi, Npar, "./Potential_tree.dat");
+
     cout << "done\n";
 
     return 0;

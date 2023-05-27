@@ -116,6 +116,8 @@ void ComputeMoments( double* mass, double com[3], double* hmax, Octree* tree )
             }
         }
 
+        delete[] quadi;
+
         return;
     }
 }
@@ -146,33 +148,42 @@ double PotentialKernel(double r, double h)
 
 double PotentialWalk_quad(double* pos, Octree* tree, double theta, double softening)
 {
+    if ( tree == nullptr ) return 0.0;
+
     double phi = 0;
     double quad[3][3], r5inv;
 
+    bool IsParticle = true; // checking whether the current node is a particle
+    if ( tree->par == nullptr )   IsParticle = false;
+
     double r=0, dx[3] = {};
     for (int k=0; k<3; k++)
-    {
-        dx[k] = tree->Coordinates[k] - pos[k];
+    {   
+        if ( IsParticle )
+        {
+            dx[k] = tree->par->pos[k] - pos[k];
+        }
+        else
+        {
+            dx[k] = tree->Coordinates[k] - pos[k];
+        }
         r+=dx[k]*dx[k];
     }
     r = sqrt(r); // distance between observer and the node
 
     double h = fmax(tree->Softenings, softening); // softening length
 
-    bool IsParticle = true; // checking whether the current node is a particle
-    if ( tree->par == nullptr )   IsParticle = false;
-
     if ( IsParticle ) // it is a particle
     {
-        if ( r > 0 )
+        if ( r > 0 ) // itself, we don't calculate self-gravity
         {
             if ( r < h)
             {
-                phi += tree->Masses * PotentialKernel(r,h); 
+                phi += tree->par->mass * PotentialKernel(r,h); 
             }
             else
             {
-                phi -= tree->Masses / r;
+                phi -= tree->par->mass / r;
             } // if ( r < h)
         } // if ( r > 0 )
     } // if ( IsParticle )
@@ -189,19 +200,20 @@ double PotentialWalk_quad(double* pos, Octree* tree, double theta, double soften
     else
     {
         for (int octant=0; octant<8; octant++) // open the node
-        phi += PotentialWalk_quad(pos, tree->children[octant], theta, softening);
+        {
+            phi += PotentialWalk_quad(pos, tree->children[octant], theta, softening);
+        }
     } // else
 
     return phi;
 }
 
-double* PotentialTarget_tree(double** pos_target, double* softening_target, Octree* tree, int G, double theta)
+double* PotentialTarget_tree(int Npar, double** pos_target, double* softening_target, Octree* tree, int G, double theta)
 {
-    int N = sizeof(pos_target);
-    double* result = new double[N];
+    double* result = new double[Npar];
 
-    for (int i=0; i<N; i++)
-    result[i] = G*PotentialWalk_quad(pos_target[i], tree, softening_target[i], theta);
+    for (int i=0; i<Npar; i++)
+    result[i] = G*PotentialWalk_quad(pos_target[i], tree, theta, softening_target[i]);
 
     return result;
 }
