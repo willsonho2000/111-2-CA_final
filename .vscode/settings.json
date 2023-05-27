@@ -5,6 +5,8 @@
         "new": "cpp",
         "stdexcept": "cpp",
         "string": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "iostream": "cpp",
+        "ostream": "cpp"
     }
 }
