@@ -8,6 +8,7 @@ pos = np.random.rand(N,3) # positions randomly sampled in the unit cube
 m = np.repeat(1./N,N) # masses - let the system have unit mass
 h = np.repeat(0.01,N) # softening radii
 
+print(" Generating Particle.dat... ")
 f = open("./Particle.dat","w")
 
 for i in range(N):
@@ -20,6 +21,7 @@ f.close()
 
 # Store reference potential
 # Using brute force
+print(" Generating Potential_bruteforce_ref.dat... ")
 p = Potential(pos,m,h,method='bruteforce')
 f = open("./Potential_bruteforce_ref.dat", "w")
 
@@ -32,6 +34,7 @@ for i in range(N):
 f.close()
 
 # Using tree
+print(" Generating Potential_tree_ref.dat... ")
 p = Potential(pos,m,h,method='tree')
 f = open("./Potential_tree_ref.dat", "w")
 
