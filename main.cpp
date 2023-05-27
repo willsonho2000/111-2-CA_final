@@ -70,7 +70,7 @@ int main( int argc, char* argv[] ) {
     // Store particles' properties
     ReadPar(Npar,pos, m, h, input);
 
-    Octree* tree = new Octree( Npar, pos, m, h, true );
+    Octree* tree = new Octree( Npar, pos, m, h );
 
     // Declare the array to store the potential
     double* phi = new double[Npar];
