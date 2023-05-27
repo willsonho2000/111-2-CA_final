@@ -1,6 +1,9 @@
 # Tree Algorithm For Gravity
-## Team Name: Happy Tree Friends
-## Collaborators:
+
+## Team Name
+Happy Tree Friends
+
+## Collaborators
 * Meng-Yuan, Ho (NTU)
 * Wei-An, Chen (NTU)
 
@@ -11,7 +14,7 @@
 In this project, we demonstrate a method to calculate the gravitational potential for N-body problem by building up an octree.
 
 # Requirement
-* GCC version 12.2.0
+* GCC or any c++ compiler
 * OpenMP
 * Python3
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

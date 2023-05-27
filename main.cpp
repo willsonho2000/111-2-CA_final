@@ -45,8 +45,11 @@ int main( int argc, char* argv[] ) {
     // Store particles' properties
     ReadPar(Npar,pos, m, h, input);
 
-    Octree* tree = new Octree( Npar, pos, m, h, true );
-    cout << "done\n";
+    double total_mass = 0.;
+    for ( int i = 0; i < Npar; i++ ) total_mass += m[i];
+
+    Octree* tree = new Octree( Npar, pos, m, h );
+    cout << "total masses: " << tree->Masses << " , compared to the initial condition: " << total_mass << "\n";
 
     return 0;
 }
