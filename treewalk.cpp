@@ -34,8 +34,8 @@ void ComputeMoments( double* mass, double* com, double** quad, double* hmax, Oct
          com  = tree->par->pos;
         *hmax = tree->par->softening;
         // quad has defined in the previous line
-        std::cout << *mass << "\n";
-        for ( int i = 0; i < 3; i++ ) std::cout << tree->par->pos[i] << " ";
+        // std::cout << *mass << "\n";
+        // for ( int i = 0; i < 3; i++ ) std::cout << tree->par->pos[i] << " ";
 
         return;
     }
