@@ -46,6 +46,7 @@ int main( int argc, char* argv[] ) {
     ReadPar(Npar,pos, m, h, input);
 
     Octree* tree = new Octree( Npar, pos, m, h, true );
+    cout << "done\n";
 
     return 0;
 }

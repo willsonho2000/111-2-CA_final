@@ -42,21 +42,23 @@ Particle::Particle( int* position, double m, double soft ) {
 
 // initialization
 Octree::Octree( int N, double** points, double* masses, double* softening, bool quadrupole=false ) {
+
     this->par = nullptr;
     // Assigning null to the children
     children.assign( 8, nullptr );
 
     this->root = this;
     this->Coordinates = new double[3]{0};
+    this->Quadrupoles = new double*[3];
+    for ( int i = 0; i < 3; i++ ) this->Quadrupoles[i] = new double[3]{0.};
     this->NumNodes = N;
     this->Sizes = 0.;
     this->Softenings = 0.;
     this->Masses = 0.;
 
     this->BuildTree( points, masses, softening );
-    double *mass, *com, *hmax; 
-    double** quad;
-    ComputeMoments( mass, com, quad, hmax, this );
+    double mass, com[3], hmax; 
+    ComputeMoments( &mass, com, &hmax, this );
 }
 
 Octree::Octree( Particle* root_par, Octree* root_ptr ) {
@@ -99,9 +101,11 @@ void Octree::Insert( Particle* new_par, int octant ) {
             // turn the node to a tree
             this->children[octant]->par = nullptr;
 
-            // set the tree Coordinates and sizes
+            // set the tree Coordinates, quadrupoles and sizes
             this->children[octant]->Sizes = this->Sizes/2.;
             this->children[octant]->Coordinates = new double[3]{0.};
+            this->children[octant]->Quadrupoles = new double*[3];
+            for ( int i = 0; i < 3; i++ ) this->children[octant]->Quadrupoles[i] = new double[3]{0.};
 
             // set the value of Coordinates
             double* cur_coord = this->Coordinates;
@@ -156,7 +160,7 @@ void Octree::BuildTree( double** points, double* masses, double* softenings ) {
 
         // delcare a new node then insert it
         Particle* i_par = new Particle( pos, masses[i], softenings[i] );
-        
+
         int i_octant = FindQuad( pos, this->Coordinates );
         this->Insert( i_par, i_octant );
     }
