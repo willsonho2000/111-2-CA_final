@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
+#include <omp.h>
 #include "octree.h"
 #include "treewalk.h"
 
@@ -52,9 +53,12 @@ int main( int argc, char* argv[] ) {
     // Use ./main.out ./Particle.dat
     // Basic settings
     string input = argv[1];
-    const int    Npar  =  100;
+    const int    Npar  =  10;
     const int    G     =   1;
     const double theta = 0.0;
+
+    const int    NThread = 4;
+    omp_set_num_threads( NThread );
 
     // Declare particle's properties
     double** pos = new double*[Npar];
@@ -71,7 +75,11 @@ int main( int argc, char* argv[] ) {
     // Declare the array to store the potential
     double* phi = new double[Npar];
 
+    double start = omp_get_wtime();
     phi = PotentialTarget_tree(Npar, pos, h, tree, G, theta);
+    double end   = omp_get_wtime();
+
+    printf("Wall time = %.3f s\n", end - start);
 
     WritePot(phi, Npar, "./Potential_tree.dat");
 

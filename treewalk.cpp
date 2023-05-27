@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <math.h>
 #include <algorithm>
+#include <omp.h>
 #include "octree.h"
 #include "treewalk.h"
 using namespace std;
@@ -219,6 +220,9 @@ double* PotentialTarget_tree(int Npar, double** pos_target, double* softening_ta
 {
     double* result = new double[Npar];
 
+    printf( "Number of threads = %d\n", omp_get_max_threads() );
+
+#   pragma omp parallel for
     for (int i=0; i<Npar; i++)
     result[i] = G*PotentialWalk_quad(pos_target[i], tree, theta, softening_target[i]);
 
