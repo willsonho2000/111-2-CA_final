@@ -114,6 +114,7 @@ void ComputeMoments( double* mass, double com[3], double* hmax, Octree* tree )
             for( int i = 0; i < 3; i++ ){
                 delete[] quadi[i];
             }
+            delete[] quadi;
         }
 
         return;
