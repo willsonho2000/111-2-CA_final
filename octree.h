@@ -28,7 +28,7 @@ public:
     double** Quadrupoles;   // set quadrapoles
 
     // initialization an empty tree
-    Octree( int N, double** points, double* masses, double* softening, bool quadrupole );
+    Octree( int N, double** points, double* masses, double* softening );
     Octree( Particle* root_par, Octree* root_ptr );    // initialize a new particle
 
     void Insert( Particle* new_par, int octant );
