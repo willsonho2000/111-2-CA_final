@@ -19,8 +19,21 @@ for i in range(N):
 f.close()
 
 # Store reference potential
+# Using brute force
 p = Potential(pos,m,h,method='bruteforce')
-f = open("./Ref.dat", "w")
+f = open("./Potential_bruteforce_ref.dat", "w")
+
+for i in range(N):
+    if i==N-1:
+        f.write("%13.7e" %(p[i]))
+    else:
+        f.write("%13.7e\n" %(p[i]))
+
+f.close()
+
+# Using tree
+p = Potential(pos,m,h,method='tree')
+f = open("./Potential_tree_ref.dat", "w")
 
 for i in range(N):
     if i==N-1:

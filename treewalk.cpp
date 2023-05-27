@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <math.h>
 #include <algorithm>
+#include <omp.h>
 #include "octree.h"
 #include "treewalk.h"
 using namespace std;
@@ -82,8 +83,15 @@ void ComputeMoments( double* mass, double com[3], double* hmax, Octree* tree )
             for (int k = 0; k < 3; k++ )
             for (int l = 0; l < 3; l++ )
             {
-                quad[k][l] += quadi[k][l] + mi*3*ri[k]*ri[l];
-                if ( k==l ) quad[k][l] -= mi*r2;
+                if ( tree->children[octant]->par != nullptr )
+                {
+                    quad[k][l] += quadi[k][l] + mi*3*ri[k]*ri[l];
+                    if ( k==l ) quad[k][l] -= mi*r2;
+                }
+                else // if the child is a node, just propagate quadi up to the parent
+                {
+                    quad[k][l] += quadi[k][l];
+                }
             } // l, k
         } // for (int octant=0; octant<8; octant++)
 
@@ -117,6 +125,8 @@ void ComputeMoments( double* mass, double com[3], double* hmax, Octree* tree )
             delete[] quadi;
         }
 
+        delete[] quadi;
+
         return;
     }
 }
@@ -147,33 +157,42 @@ double PotentialKernel(double r, double h)
 
 double PotentialWalk_quad(double* pos, Octree* tree, double theta, double softening)
 {
+    if ( tree == nullptr ) return 0.0;
+
     double phi = 0;
     double quad[3][3], r5inv;
 
+    bool IsParticle = true; // checking whether the current node is a particle
+    if ( tree->par == nullptr )   IsParticle = false;
+
     double r=0, dx[3] = {};
     for (int k=0; k<3; k++)
-    {
-        dx[k] = tree->Coordinates[k] - pos[k];
+    {   
+        if ( IsParticle )
+        {
+            dx[k] = tree->par->pos[k] - pos[k];
+        }
+        else
+        {
+            dx[k] = tree->Coordinates[k] - pos[k];
+        }
         r+=dx[k]*dx[k];
     }
     r = sqrt(r); // distance between observer and the node
 
     double h = fmax(tree->Softenings, softening); // softening length
 
-    bool IsParticle = true; // checking whether the current node is a particle
-    if ( tree->par == nullptr )   IsParticle = false;
-
     if ( IsParticle ) // it is a particle
     {
-        if ( r > 0 )
+        if ( r > 0 ) // itself, we don't calculate self-gravity
         {
             if ( r < h)
             {
-                phi += tree->Masses * PotentialKernel(r,h); 
+                phi += tree->par->mass * PotentialKernel(r,h); 
             }
             else
             {
-                phi -= tree->Masses / r;
+                phi -= tree->par->mass / r;
             } // if ( r < h)
         } // if ( r > 0 )
     } // if ( IsParticle )
@@ -190,19 +209,23 @@ double PotentialWalk_quad(double* pos, Octree* tree, double theta, double soften
     else
     {
         for (int octant=0; octant<8; octant++) // open the node
-        phi += PotentialWalk_quad(pos, tree->children[octant], theta, softening);
+        {
+            phi += PotentialWalk_quad(pos, tree->children[octant], theta, softening);
+        }
     } // else
 
     return phi;
 }
 
-double* PotentialTarget_tree(double** pos_target, double* softening_target, Octree* tree, int G, double theta)
+double* PotentialTarget_tree(int Npar, double** pos_target, double* softening_target, Octree* tree, int G, double theta)
 {
-    int N = sizeof(pos_target);
-    double* result = new double[N];
+    double* result = new double[Npar];
 
-    for (int i=0; i<N; i++)
-    result[i] = G*PotentialWalk_quad(pos_target[i], tree, softening_target[i], theta);
+    printf( "Number of threads = %d\n", omp_get_max_threads() );
+
+#   pragma omp parallel for
+    for (int i=0; i<Npar; i++)
+    result[i] = G*PotentialWalk_quad(pos_target[i], tree, theta, softening_target[i]);
 
     return result;
 }
