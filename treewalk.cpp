@@ -13,13 +13,15 @@ void ComputeMoments( double* mass, double* com, double** quad, double* hmax, Oct
     // Note:
     // 1. quad is intitially 0
     // #####################
+    if ( tree == nullptr ) return;
 
     bool IsParticle = true; // checking whether the current node is a particle
     if ( tree->par == nullptr )   IsParticle = false;
+    std::cout << IsParticle << "\n";
 
     // some properties for the child
-    double* hmaxi;
-    double* massi;
+    double hmaxi;
+    double massi;
     double*  comi;
     double** quadi;
 
@@ -28,29 +30,34 @@ void ComputeMoments( double* mass, double* com, double** quad, double* hmax, Oct
 
     if ( IsParticle )
     {
-        mass = &(tree->par->mass);
-        com  =   tree->par->pos;
-        hmax = &(tree->par->softening);
+        *mass = tree->par->mass;
+         com  = tree->par->pos;
+        *hmax = tree->par->softening;
         // quad has defined in the previous line
+        std::cout << *mass << "\n";
+        for ( int i = 0; i < 3; i++ ) std::cout << tree->par->pos[i] << " ";
 
         return;
     }
     else // it is a node
     {
-        double hmax0   = 0;                 // some properties for the node
-        double m0      = 0;                 // total mass
+        double hmax0   = 0.;                 // some properties for the node
+        double m0      = 0.;                 // total mass
         double com0[3]{0.};                 // used to calculate COM of the node
 
         for ( int octant=0; octant<8; octant++ ) // open the node to calculate the total mass and COM position
         {
             if ( tree->children[octant] == nullptr ) continue;
-            ComputeMoments( massi, comi, quadi, hmaxi, tree->children[octant] );
+            ComputeMoments( &massi, comi, quadi, &hmaxi, tree->children[octant] );
 
-            hmax0 = max( hmax0, *hmaxi );
-            m0 += *massi;
-            for ( int i = 0; i < 3; i++ ) com0[i] += (*massi)*comi[i];
+            hmax0 = max( hmax0, hmaxi );
+            m0 += massi;
+            for ( int i = 0; i < 3; i++ ) com0[i] += massi*comi[i];
         } // for (int octant=0; octant<8; octant++)
-
+        std::cout << m0 << ", ";
+        for ( int i = 0; i < 3; i++ ) std::cout << com0[i] << " ";
+        std::cout << "\n";
+        
         // compute the COM
         for ( int i = 0; i < 3; i++ ) com0[i] = com0[i]/m0;
 
