@@ -52,7 +52,12 @@ make
 ```
 or
 ```
+g++-12  octree.cpp treewalk.cpp main.cpp -fopenmp -o main.out
 ./main.out Particle.dat
 ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+# Performace
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
