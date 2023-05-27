@@ -7,7 +7,7 @@
 #include "treewalk.h"
 using namespace std;
 
-void ComputeMoments( double* mass, double* com, double** quad, double* hmax, Octree* tree )
+void ComputeMoments( double* mass, double com[3], double* hmax, Octree* tree )
 {
     // #####################
     // Note:
@@ -17,47 +17,40 @@ void ComputeMoments( double* mass, double* com, double** quad, double* hmax, Oct
 
     bool IsParticle = true; // checking whether the current node is a particle
     if ( tree->par == nullptr )   IsParticle = false;
-    std::cout << IsParticle << "\n";
 
-    // some properties for the child
-    double hmaxi;
-    double massi;
-    double*  comi;
-    double** quadi;
-
+    double** quad;
     quad = new double*[3]; // empty
-    for (int i = 0; i < 3; i++)  quad[i] = new double[3]{0};
+    for (int i = 0; i < 3; i++)  quad[i] = new double[3]{0.};
 
     if ( IsParticle )
     {
         *mass = tree->par->mass;
-         com  = tree->par->pos;
+        for ( int i = 0; i < 3; i++ ) com[i] = tree->par->pos[i];
         *hmax = tree->par->softening;
-        // quad has defined in the previous line
-        // std::cout << *mass << "\n";
-        // for ( int i = 0; i < 3; i++ ) std::cout << tree->par->pos[i] << " ";
 
         return;
     }
     else // it is a node
     {
-        double hmax0   = 0.;                 // some properties for the node
-        double m0      = 0.;                 // total mass
+        double hmax0   = 0.;                // some properties for the node
+        double m0      = 0.;                // total mass
         double com0[3]{0.};                 // used to calculate COM of the node
+        double comi[3];                     // some properties for the child
 
         for ( int octant=0; octant<8; octant++ ) // open the node to calculate the total mass and COM position
         {
+            // some properties for the child
+            double hmaxi;
+            double massi;
+
             if ( tree->children[octant] == nullptr ) continue;
-            ComputeMoments( &massi, comi, quadi, &hmaxi, tree->children[octant] );
+            ComputeMoments( &massi, comi, &hmaxi, tree->children[octant] );
 
             hmax0 = max( hmax0, hmaxi );
             m0 += massi;
             for ( int i = 0; i < 3; i++ ) com0[i] += massi*comi[i];
         } // for (int octant=0; octant<8; octant++)
-        std::cout << m0 << ", ";
-        for ( int i = 0; i < 3; i++ ) std::cout << com0[i] << " ";
-        std::cout << "\n";
-        
+
         // compute the COM
         for ( int i = 0; i < 3; i++ ) com0[i] = com0[i]/m0;
 
@@ -68,8 +61,20 @@ void ComputeMoments( double* mass, double* com, double** quad, double* hmax, Oct
             double ri[3]{0.};
             double r2 = (double)0;
 
-            comi  = tree->children[octant]->Coordinates;
-            quadi = tree->children[octant]->Quadrupoles;
+            double*  comi;
+            double** quadi;
+            double mi;
+
+            if ( tree->children[octant]->par != nullptr ) {
+                quadi = quad;
+                comi  = tree->children[octant]->par->pos;
+                mi    = tree->children[octant]->par->mass;
+            }
+            else {
+                quadi = tree->children[octant]->Quadrupoles;
+                comi  = tree->children[octant]->Coordinates;
+                mi    = tree->children[octant]->Masses;
+            }
 
             for (int i = 0; i < 3; i++ ) ri[i] = comi[i] - com0[i];
             for (int i = 0; i < 3; i++ ) r2 += ri[i]*ri[i];
@@ -77,8 +82,8 @@ void ComputeMoments( double* mass, double* com, double** quad, double* hmax, Oct
             for (int k = 0; k < 3; k++ )
             for (int l = 0; l < 3; l++ )
             {
-                quad[k][l] += quadi[k][l] + tree->children[octant]->Masses*3*ri[k]*ri[l];
-                if ( k==l ) quad[k][l] -= tree->children[octant]->Masses*r2;
+                quad[k][l] += quadi[k][l] + mi*3*ri[k]*ri[l];
+                if ( k==l ) quad[k][l] -= mi*r2;
             } // l, k
         } // for (int octant=0; octant<8; octant++)
 
@@ -93,14 +98,23 @@ void ComputeMoments( double* mass, double* com, double** quad, double* hmax, Oct
         tree->Masses      = m0;
         for ( int i = 0; i < 3; i++ ) tree->Coordinates[i] = com0[i];
         tree->Softenings  = hmax0;
+        double** quadi = tree->Quadrupoles;
         tree->Quadrupoles = quad;
         tree->Deltas      = sqrt( delta );
 
+
         // return the properties to parent node
-        mass        = &tree->Masses;
-        com         =  tree->Coordinates;
-        quad        =  tree->Quadrupoles;
-        hmax        = &tree->Softenings;
+        *mass       = tree->Masses;
+        for ( int i = 0; i < 3; i++ ) com[i] = com0[i];
+        *hmax       = tree->Softenings;
+
+        if ( tree->par == nullptr ) {
+        
+            // free memory
+            for( int i = 0; i < 3; i++ ){
+                delete[] quadi[i];
+            }
+        }
 
         return;
     }
