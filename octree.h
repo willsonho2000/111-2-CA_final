@@ -1,8 +1,6 @@
 #include <iostream>
 #include <vector>
 
-using namespace std;
-
 struct Particle {
     double pos[3];
     double mass;
@@ -17,7 +15,7 @@ struct Particle {
 class Octree {
 public:
     Particle* par;
-    vector<Octree*> children;
+    std::vector<Octree*> children;
     
     int NumNodes;           // how many particles the grid contain
     double Sizes;           // the size of the grid
@@ -26,11 +24,11 @@ public:
     double Masses;          // set masses
 
     Octree* root;           // the root of the tree
-    double* Coordinates;     // the center of the grid
+    double* Coordinates;    // the center of the grid
     double** Quadrupoles;   // set quadrapoles
 
     // initialization an empty tree
-    Octree( double** points, double* masses, double* softening, bool morton_order, bool quadrupole );
+    Octree( int N, double** points, double* masses, double* softening, bool quadrupole );
     Octree( Particle* root_par, Octree* root_ptr );    // initialize a new particle
 
     void Insert( Particle* new_par, int octant );

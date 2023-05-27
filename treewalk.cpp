@@ -4,9 +4,10 @@
 #include <math.h>
 #include <algorithm>
 #include "octree.h"
+#include "treewalk.h"
 using namespace std;
 
-void ComputeMoments(double* mass, double* com, double** quad, double* hmax, Octree* tree)
+void ComputeMoments( double* mass, double* com, double** quad, double* hmax, Octree* tree )
 {
     // #####################
     // Note:
@@ -16,80 +17,86 @@ void ComputeMoments(double* mass, double* com, double** quad, double* hmax, Octr
     bool IsParticle = true; // checking whether the current node is a particle
     if ( tree->par == nullptr )   IsParticle = false;
 
-    double* hmaxi; // some properties for the child
+    // some properties for the child
+    double* hmaxi;
     double* massi;
-    double*  comi  = new double[3]{0};
-    double** quadi = new double*[3];
-    for (int i = 0; i < 3; i++)  quadi[i] = new double[3]{0};
+    double*  comi;
+    double** quadi;
 
-    quad = quadi; // empty
+    quad = new double*[3]; // empty
+    for (int i = 0; i < 3; i++)  quad[i] = new double[3]{0};
 
     if ( IsParticle )
     {
         mass = &(tree->par->mass);
         com  =   tree->par->pos;
         hmax = &(tree->par->softening);
+        // quad has defined in the previous line
+
+        return;
     }
     else // it is a node
     {
-        double hmax0   = 0; // some properties for the node
-        double m0      = 0; // total mass
-        double com0[3] = {}; // used to calculate COM of the node
+        double hmax0   = 0;                 // some properties for the node
+        double m0      = 0;                 // total mass
+        double com0[3]{0.};                 // used to calculate COM of the node
 
-        for (int octant=0; octant<8; octant++) // open the node to calculate the total mass and COM position
+        for ( int octant=0; octant<8; octant++ ) // open the node to calculate the total mass and COM position
         {
-            ComputeMoments(massi, comi, quadi, hmaxi, tree->children[octant]);
+            if ( tree->children[octant] == nullptr ) continue;
+            ComputeMoments( massi, comi, quadi, hmaxi, tree->children[octant] );
 
-            hmax0 = max(hmax0, *hmaxi);
+            hmax0 = max( hmax0, *hmaxi );
             m0 += *massi;
-            for (int i = 0; i < 3; i++) com0[i] += (*massi)*comi[i];
+            for ( int i = 0; i < 3; i++ ) com0[i] += (*massi)*comi[i];
         } // for (int octant=0; octant<8; octant++)
 
-        mass         = &m0;
-        for (int i = 0; i < 3; i++) com[i] = com0[i]/m0;
-        hmax         = &hmax0;
+        // compute the COM
+        for ( int i = 0; i < 3; i++ ) com0[i] = com0[i]/m0;
 
-        for (int octant=0; octant<8; octant++) // open the node to calculate quadrapoles from children
+        for ( int octant=0; octant<8; octant++ ) // open the node to calculate quadrapoles from children
         {
-            double* ri = new double[3];
-            double  r2 = (double)0;
+            if ( tree->children[octant] == nullptr ) continue;
+            
+            double ri[3]{0.};
+            double r2 = (double)0;
 
             comi  = tree->children[octant]->Coordinates;
             quadi = tree->children[octant]->Quadrupoles;
 
-            for (int i = 0; i < 3; i++) ri[i] = comi[i] - com[i];
-            for (int i = 0; i < 3; i++) r2 += ri[i]*ri[i];
+            for (int i = 0; i < 3; i++ ) ri[i] = comi[i] - com0[i];
+            for (int i = 0; i < 3; i++ ) r2 += ri[i]*ri[i];
 
-            for (int k = 0; k < 3; k++)
-            for (int l = 0; l < 3; l++)
+            for (int k = 0; k < 3; k++ )
+            for (int l = 0; l < 3; l++ )
             {
                 quad[k][l] += quadi[k][l] + tree->children[octant]->Masses*3*ri[k]*ri[l];
                 if ( k==l ) quad[k][l] -= tree->children[octant]->Masses*r2;
             } // l, k
-
-            delete[] ri;
         } // for (int octant=0; octant<8; octant++)
 
         double delta = (double)0;
-        for (int dim=0; dim<3; dim++)
+        for ( int dim=0; dim<3; dim++ )
         {
-            double dx = com[dim] - tree->Coordinates[dim];
-            delta += pow(dx, 2);
+            double dx = com0[dim] - tree->Coordinates[dim];
+            delta += pow( dx, 2 );
         } // for (int dim=0; dim<3; dim++)
 
         // update tree properties
         tree->Masses      = m0;
-        tree->Coordinates = com;
+        for ( int i = 0; i < 3; i++ ) tree->Coordinates[i] = com0[i];
         tree->Softenings  = hmax0;
         tree->Quadrupoles = quad;
-        tree->Deltas      = sqrt(delta);
-    }
+        tree->Deltas      = sqrt( delta );
 
-    for(int i = 0; i < 3; i++){
-        delete[] quadi[i];
+        // return the properties to parent node
+        mass        = &tree->Masses;
+        com         =  tree->Coordinates;
+        quad        =  tree->Quadrupoles;
+        hmax        = &tree->Softenings;
+
+        return;
     }
-    delete[] quadi;
-    delete[] comi;
 }
 
 double PotentialKernel(double r, double h)
@@ -170,7 +177,7 @@ double PotentialWalk_quad(double* pos, Octree* tree, double theta, double soften
 double* PotentialTarget_tree(double** pos_target, double* softening_target, Octree* tree, int G, double theta)
 {
     int N = sizeof(pos_target);
-    double result[N];
+    double* result = new double[N];
 
     for (int i=0; i<N; i++)
     result[i] = G*PotentialWalk_quad(pos_target[i], tree, softening_target[i], theta);

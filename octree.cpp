@@ -1,8 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "octree.h"
-
-using namespace std;
+#include "treewalk.h"
 
 int octant_offset[8][3] =  {{-1,-1,-1},
                             {1,-1,-1},
@@ -42,19 +41,22 @@ Particle::Particle( int* position, double m, double soft ) {
 }
 
 // initialization
-Octree::Octree( double** points, double* masses, double* softening, bool morton_order=true, bool quadrupole=false ) {
+Octree::Octree( int N, double** points, double* masses, double* softening, bool quadrupole=false ) {
     this->par = nullptr;
     // Assigning null to the children
     children.assign( 8, nullptr );
 
     this->root = this;
-    this->Coordinates = new double[3];
-    this->NumNodes = 0;
+    this->Coordinates = new double[3]{0};
+    this->NumNodes = N;
     this->Sizes = 0.;
     this->Softenings = 0.;
     this->Masses = 0.;
 
     this->BuildTree( points, masses, softening );
+    double *mass, *com, *hmax; 
+    double** quad;
+    ComputeMoments( mass, com, quad, hmax, this );
 }
 
 Octree::Octree( Particle* root_par, Octree* root_ptr ) {
@@ -90,6 +92,8 @@ void Octree::Insert( Particle* new_par, int octant ) {
                 // insert from the root 
                 int new_octant = FindQuad( new_par->pos, this->root->Coordinates );
                 this->root->Insert( new_par, new_octant );
+
+                return;
             } // end exception
 
             // turn the node to a tree
@@ -97,17 +101,18 @@ void Octree::Insert( Particle* new_par, int octant ) {
 
             // set the tree Coordinates and sizes
             this->children[octant]->Sizes = this->Sizes/2.;
-            this->children[octant]->Coordinates = new double[3];
+            this->children[octant]->Coordinates = new double[3]{0.};
 
             // set the value of Coordinates
             double* cur_coord = this->Coordinates;
             double* child_coor = this->children[octant]->Coordinates;
-            for ( int i = 0; i < 3; i++ ) 
+            for ( int i = 0; i < 3; i++ ) {
                 child_coor[i] = cur_coord[i] + this->Sizes*0.25*( double )octant_offset[octant][i];
+            }
 
             // put the pre-existing particle into the new tree
             int child_octant = FindQuad( child_par->pos, child_coor );
-            this->children[octant]->children[child_octant] = new Octree(child_par, this->root);
+            this->children[octant]->children[child_octant] = new Octree( child_par, this->root );
             
             // insert new node in the new tree again
             int new_octant = FindQuad( new_par->pos, child_coor );
@@ -123,17 +128,9 @@ void Octree::Insert( Particle* new_par, int octant ) {
         // the child doesn't exist, so let the particle be the child
         this->children[octant] = new Octree( new_par, this->root );
     }
-
-    this->NumNodes += 1;    // everytime we insert a node, parent's NumNodes + 1
 }
 
 void Octree::BuildTree( double** points, double* masses, double* softenings ) {
-    
-    // initialization
-    int NumParticles = this->NumNodes = sizeof( points );
-    this->Quadrupoles = new double*[3];
-    for ( int i = 0; i < NumParticles; i++ ) 
-        Quadrupoles[i] = new double[3];
     
     // record the max and the min of x, y, z
     for ( int i = 0; i < 3; i++ ) {
@@ -141,11 +138,11 @@ void Octree::BuildTree( double** points, double* masses, double* softenings ) {
         // record the max and the min of the given axis
         double i_min, i_max;
         i_min = i_max = points[0][i];
-        for ( int j = 0; j < NumParticles; j++ ) {
+        for ( int j = 0; j < this->NumNodes; j++ ) {
             double i_value = points[j][i];
 
-            if ( i_max > i_value ) i_max = i_value;
-            if ( i_min < i_value ) i_min = i_value;
+            i_max = max( i_max, i_value );
+            i_min = min( i_min, i_value );
         }
 
         // save properties of the grid size and the center of the position
@@ -153,9 +150,8 @@ void Octree::BuildTree( double** points, double* masses, double* softenings ) {
         if ( i_max - i_min > this->Sizes ) 
             this->Sizes = i_max - i_min;
     }
-
     // store the data into a new node and insert it into the tree
-    for ( int i = 0; i < NumParticles; i++ ) {
+    for ( int i = 0; i < this->NumNodes; i++ ) {
         double* pos = points[i];
 
         // delcare a new node then insert it
