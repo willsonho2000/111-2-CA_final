@@ -52,9 +52,9 @@ int main( int argc, char* argv[] ) {
     // Use ./main.out ./Particle.dat
     // Basic settings
     string input = argv[1];
-    const int    Npar  =  10;
+    const int    Npar  =  100;
     const int    G     =   1;
-    const double theta = 0.7;
+    const double theta = 0.0;
 
     // Declare particle's properties
     double** pos = new double*[Npar];
