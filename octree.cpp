@@ -145,8 +145,8 @@ void Octree::BuildTree( double** points, double* masses, double* softenings ) {
         for ( int j = 0; j < this->NumNodes; j++ ) {
             double i_value = points[j][i];
 
-            i_max = max( i_max, i_value );
-            i_min = min( i_min, i_value );
+            i_max = std::max( i_max, i_value );
+            i_min = std::min( i_min, i_value );
         }
 
         // save properties of the grid size and the center of the position
