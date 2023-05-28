@@ -37,7 +37,7 @@ void WritePot(double *phi, int Npar, string output)
 {
     ofstream out;
     out.open(output);
-    out.precision(7);
+    out.precision(16);
     out << scientific; // using scientific notation
 	for (int i = 0; i < Npar; ++i) {
         if ( i != Npar-1 )
