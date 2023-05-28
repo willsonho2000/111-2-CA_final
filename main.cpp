@@ -104,8 +104,10 @@ int main( int argc, char* argv[] ) {
     printf("The potential is saved to Potential_tree.dat.\n");
     printf("~ ~ ~ Done ~ ~ ~\n");
 
+    delete tree;
     delete[] m;
     delete[] h;
+    delete[] phi;
     for(int i = 0; i < Npar; i++){
         delete[] pos[i];
     }
