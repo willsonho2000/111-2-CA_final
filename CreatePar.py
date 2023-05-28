@@ -7,7 +7,7 @@ def NoNpar(arg):
     if len(arg) < 1:
         raise IndexError("You need to specify the values of Npar and theta")
 
-def NotCorrectNpar(arg):
+def NotCorrectVal(arg):
     if int(arg[1]) <= 1:
         raise ValueError("Please enter a correct value of Npar (Npar >= 2)")
     elif float(arg[2]) < 0:
@@ -20,7 +20,8 @@ except IndexError as error:
     sys.exit()
 
 try:
-    NotCorrectNpar(sys.argv)
+    def NotCorrectVal(arg):
+(sys.argv)
 except ValueError as error:
     print(error)
     sys.exit()
