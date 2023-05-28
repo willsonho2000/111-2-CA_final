@@ -18,7 +18,9 @@ void ReadPar(int Npar, double** pos, double* m, double* h, string input)
     }
 
     int dum;
+    double dumf; // skip Npar and theta
     in >> dum;
+    in >> dumf;
 
     for (int i=0; i<Npar; i++)
     {
@@ -58,19 +60,22 @@ int main( int argc, char* argv[] ) {
     // Basic settings
     string input = argv[1];
     const int    G     =   1;
-    const double theta = 0.0;
-
     const int    NThread = 4;
     omp_set_num_threads( NThread );
 
     // Read the number of particle
     int Npar;
+    double theta;
+
     ifstream in;
     in.open(input);
     in >> Npar;
+    in >> theta;
     in.close();
 
-    printf("Number of particles = %d\n", Npar);
+    printf("Number of particles (Npar)    = %d\n", Npar );
+    printf("Cell-opening criteria (theta) = %f\n", theta);
+    printf("\n");
 
     // Declare particle's properties
     double** pos = new double*[Npar];
@@ -92,10 +97,12 @@ int main( int argc, char* argv[] ) {
     double end   = omp_get_wtime();
 
     printf("Wall time = %5.3e s\n", end - start);
+    printf("\n");
 
     WritePot(phi, Npar, "./Potential_tree.dat");
 
-    cout << "done\n";
+    printf("The potential is saved to Potential_tree.dat.\n");
+    printf("~ ~ ~ Done ~ ~ ~\n");
 
     return 0;
 }
