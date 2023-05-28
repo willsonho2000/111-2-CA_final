@@ -1,4 +1,4 @@
-# Usage: python CreatePar.py Npar
+# Usage: python CreatePar.py Npar theta
 import sys
 import numpy as np
 from pytreegrav import Potential
