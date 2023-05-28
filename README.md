@@ -8,7 +8,7 @@ Happy Tree Friends
 * Wei-An, Chen (NTU)
 
 ## Presentation
-[Unhappy tree](https://docs.google.com/presentation/d/17UjzHAg7b2EwdX5AHwLT_Q2p9SK1uNZrL_Nhc4g7Vlk/edit?usp=sharing)
+[Happy tree](https://docs.google.com/presentation/d/17UjzHAg7b2EwdX5AHwLT_Q2p9SK1uNZrL_Nhc4g7Vlk/edit?usp=sharing)
 
 # Introduction
 In this project, we demonstrate a method to calculate the gravitational potential for N-body problem by building up an octree.
