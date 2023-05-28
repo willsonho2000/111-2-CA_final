@@ -3,7 +3,30 @@ import sys
 import numpy as np
 from pytreegrav import Potential
 
+def NoNpar(arg):
+    if len(arg) == 1:
+        raise IndexError("You need to specify the value of Npar")
+
+def NotCorrectNpar(arg):
+    if int(arg) <= 1:
+        raise ValueError("Please enter a correct value of Npar (Npar >= 2)")
+
+try:
+    NoNpar(sys.argv)
+except IndexError as error:
+    print(error)
+    sys.exit()
+
+try:
+    NotCorrectNpar(sys.argv[1])
+except ValueError as error:
+    print(error)
+    sys.exit()
+
 N = int(sys.argv[1]) # number of particles
+
+print("Npar = ", N)
+
 pos = np.random.rand(N,3).astype(np.float64) # positions randomly sampled in the unit cube
 m = np.repeat(1./N,N).astype(np.float64) # masses - let the system have unit mass
 h = np.repeat(0.01,N).astype(np.float64) # softening radii
