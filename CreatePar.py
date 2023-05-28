@@ -20,8 +20,7 @@ except IndexError as error:
     sys.exit()
 
 try:
-    def NotCorrectVal(arg):
-(sys.argv)
+    NotCorrectVal(sys.argv)
 except ValueError as error:
     print(error)
     sys.exit()
