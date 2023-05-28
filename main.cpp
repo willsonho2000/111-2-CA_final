@@ -18,7 +18,7 @@ void ReadPar(int Npar, double** pos, double* m, double* h, string input)
     }
 
     int dum;
-    double dumf; // skip Npar and theta
+    double dumf; // skip Npar and thetae
     in >> dum;
     in >> dumf;
 
@@ -103,6 +103,13 @@ int main( int argc, char* argv[] ) {
 
     printf("The potential is saved to Potential_tree.dat.\n");
     printf("~ ~ ~ Done ~ ~ ~\n");
+
+    delete[] m;
+    delete[] h;
+    for(int i = 0; i < Npar; i++){
+        delete[] pos[i];
+    }
+    delete[] pos;
 
     return 0;
 }
