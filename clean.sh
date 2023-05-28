@@ -1,0 +1,1 @@
+rm -rf Potential_* Particle.dat
