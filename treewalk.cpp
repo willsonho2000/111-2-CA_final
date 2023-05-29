@@ -85,7 +85,7 @@ void ComputeMoments( double* mass, double com[3], double* hmax, Octree* tree )
             {
                 if ( tree->children[octant]->par != nullptr )
                 {
-                    quad[k][l] += quadi[k][l] + mi*3*ri[k]*ri[l];
+                    quad[k][l] += mi*3*ri[k]*ri[l];
                     if ( k==l ) quad[k][l] -= mi*r2;
                 }
                 else // if the child is a node, just propagate quadi up to the parent
