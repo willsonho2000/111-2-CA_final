@@ -8,7 +8,7 @@ Happy Tree Friends
 * Wei-An, Chen (NTU)
 
 ## Presentation
-[Unhappy tree](https://docs.google.com/presentation/d/17UjzHAg7b2EwdX5AHwLT_Q2p9SK1uNZrL_Nhc4g7Vlk/edit?usp=sharing)
+[Happy tree](https://docs.google.com/presentation/d/17UjzHAg7b2EwdX5AHwLT_Q2p9SK1uNZrL_Nhc4g7Vlk/edit?usp=sharing)
 
 # Introduction
 In this project, we demonstrate a method to calculate the gravitational potential for N-body problem by building up an octree.
@@ -31,7 +31,7 @@ git clone https://github.com/willsonho2000/111-2-CA_final.git
 ```
 python3 CreatePar.py Npar theta
 ```
-where **Npar** is the number of particles and **theta** is the cell-opening criteria. Or, you can manually write a file (_recommand_: Particle.dat) in the following format.
+where **Npar** is the number of particles and **theta** is the cell-opening criteria. Or, you can manually write a file (_recommand_: `Particle.dat`) in the following format.
 ```
 Npar theta (first line)
 pos_i[x] pos_i[y] pos_i[z] mass_i softening_i
@@ -48,7 +48,7 @@ Example:
 ```
 _Note: The data should all be saved as **double** type_.
 
-Potential_tree_ref.dat and Potential_bruteforce_ref.dat will be also generated as reference from [pytreegrav](https://github.com/mikegrudic/pytreegrav).
+`Potential_tree_ref.dat` and `Potential_bruteforce_ref.dat` will be also generated as reference from [pytreegrav](https://github.com/mikegrudic/pytreegrav).
 
 2. Edit `Makefile` file, where ***mpicxx*** should be replaced by the compiler which the OpenMP is installed in.
 
@@ -63,9 +63,9 @@ g++-12  octree.cpp treewalk.cpp main.cpp -fopenmp -o main.out
 ./main.out Particle.dat
 ```
 
-Potential_tree.dat will be generated and the potential is stored in the same (particle) order of Particle.dat.
+`Potential_tree.dat` will be generated and the potential is stored in the same (particle) order of `Particle.dat`.
 
-4. Use CalError.py to compute and compare the errors.
+4. Use `CalError.py` to compute and compare the errors.
 
 ```
 python3 CalError.py

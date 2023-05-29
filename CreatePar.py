@@ -4,7 +4,7 @@ import numpy as np
 from pytreegrav import Potential
 
 def NoNpar(arg):
-    if len(arg) < 1:
+    if len(arg) <= 2:
         raise IndexError("You need to specify the values of Npar and theta")
 
 def NotCorrectVal(arg):
@@ -50,11 +50,7 @@ print("Particle.dat is saved.\n")
 
 # Store reference potential
 # Using brute force
-<<<<<<< HEAD
-print(" Generating Potential_bruteforce_ref.dat... ")
-=======
-print("Calculating the potential with brute force.")
->>>>>>> main
+print("Calculating the potential with brute force...")
 p = Potential(pos,m,h,method='bruteforce')
 f = open("./Potential_bruteforce_ref.dat", "w")
 
@@ -68,11 +64,7 @@ f.close()
 print("Potential_bruteforce_ref.dat is saved.\n")
 
 # Using tree
-<<<<<<< HEAD
-print(" Generating Potential_tree_ref.dat... ")
-=======
 print("Calculating the potential with pytreegrav.")
->>>>>>> main
 p = Potential(pos,m,h,method='tree')
 f = open("./Potential_tree_ref.dat", "w")
 
