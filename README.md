@@ -31,7 +31,7 @@ git clone https://github.com/willsonho2000/111-2-CA_final.git
 ```
 python3 CreatePar.py Npar theta
 ```
-where **Npar** is the number of particles and **theta** is the cell-opening criteria. Or, you can manually write a file (_recommand_: `Particle.dat`) in the following format.
+where **Npar** is the number of particles and **theta** is the cell-opening criteria. Or, you can manually write a file (_recommend_: `Particle.dat`) in the following format.
 ```
 Npar theta (first line)
 pos_i[x] pos_i[y] pos_i[z] mass_i softening_i
@@ -50,7 +50,7 @@ _Note: The data should all be saved as **double** type_.
 
 `Potential_tree_ref.dat` and `Potential_bruteforce_ref.dat` will be also generated as reference from [pytreegrav](https://github.com/mikegrudic/pytreegrav).
 
-2. Edit `Makefile` file, where ***mpicxx*** should be replaced by the compiler which the OpenMP is installed in.
+2. Edit `Makefile`, where ***mpicxx*** should be replaced by the compiler which the OpenMP is installed in.
 
 3. To compute the potential, you can simply type _make_ to do it.
 
