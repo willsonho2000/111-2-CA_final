@@ -65,7 +65,7 @@ print("Potential_bruteforce_ref.dat is saved.\n")
 
 # Using tree
 print("Calculating the potential with pytreegrav...")
-p = Potential(pos,m,h,method='tree')
+p = Potential(pos,m,h,theta=theta, method='tree')
 f = open("./Potential_tree_ref.dat", "w")
 
 for i in range(N):

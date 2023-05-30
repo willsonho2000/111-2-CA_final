@@ -87,12 +87,12 @@ int main( int argc, char* argv[] ) {
     // Store particles' properties
     ReadPar(Npar, pos, m, h, input);
 
+    double start = omp_get_wtime(); 
     Octree* tree = new Octree( Npar, pos, m, h );
 
     // Declare the array to store the potential
     double* phi = new double[Npar];
 
-    double start = omp_get_wtime();
     phi = PotentialTarget_tree(Npar, pos, h, tree, G, theta);
     double end   = omp_get_wtime();
 
