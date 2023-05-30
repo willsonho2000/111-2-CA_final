@@ -73,6 +73,3 @@ python3 CalError.py
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-# Performace
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
