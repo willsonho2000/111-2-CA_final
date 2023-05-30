@@ -4,8 +4,8 @@
 Happy Tree Friends
 
 ## Collaborators
-* Meng-Yuan, Ho (NTU)
-* Wei-An, Chen (NTU)
+* Meng-Yuan Ho (NTU)
+* Wei-An Chen (NTU)
 
 ## Presentation
 [Happy tree](https://docs.google.com/presentation/d/17UjzHAg7b2EwdX5AHwLT_Q2p9SK1uNZrL_Nhc4g7Vlk/edit?usp=sharing)
