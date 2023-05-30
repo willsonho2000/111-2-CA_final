@@ -35,6 +35,7 @@ pos = np.random.rand(N,3).astype(np.float64) # positions randomly sampled in the
 m = np.repeat(1./N,N).astype(np.float64) # masses - let the system have unit mass
 h = np.repeat(0.01,N).astype(np.float64) # softening radii
 
+print(" Generating Particle.dat...")
 f = open("./Particle.dat","w")
 f.write("%d %.16e \n"%(N, theta))
 
