@@ -2,7 +2,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <math.h>
-#include <algorithm>
 #include <omp.h>
 #include "octree.h"
 #include "treewalk.h"
@@ -198,12 +197,11 @@ double PotentialWalk_quad(double* pos, Octree* tree, double theta, double soften
     else if ( r > fmax(tree->Sizes/theta + tree->Deltas, h+tree->Sizes*0.6+tree->Deltas) ) // satisfy opening criteria
     {
         phi -= tree->Masses/r;
-        copy(&tree->Quadrupoles[0][0], &tree->Quadrupoles[0][0] + 3 * 3, &quad[0][0]);
         r5inv = 1 / pow(r, 5);
 
         for (int k=0; k<3; k++)
         for (int l=0; l<3; l++)
-        phi -= 0.5 * dx[k] * quad[k][l] * dx[l] * r5inv;
+        phi -= 0.5 * dx[k] * tree->Quadrupoles[k][l] * dx[l] * r5inv;
     } // else if ( r > fmax(tree->Sizes/theta + tree->Deltas, h+tree->Sizes*0.6+tree->Deltas) )
     else
     {
