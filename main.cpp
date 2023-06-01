@@ -87,16 +87,18 @@ int main( int argc, char* argv[] ) {
     // Store particles' properties
     ReadPar(Npar, pos, m, h, input);
 
+    double start1 = omp_get_wtime(); 
     Octree* tree = new Octree( Npar, pos, m, h );
 
     // Declare the array to store the potential
     double* phi = new double[Npar];
 
-    double start = omp_get_wtime();
+    double start2 = omp_get_wtime(); 
     phi = PotentialTarget_tree(Npar, pos, h, tree, G, theta);
     double end   = omp_get_wtime();
 
-    printf("Wall time = %5.3e s\n", end - start);
+    printf("Wall time for building the tree         = %5.3e s\n", start2 - start1);
+    printf("Wall time for calculating the potential = %5.3e s\n", end - start2);
     printf("\n");
 
     WritePot(phi, Npar, "./Potential_tree.dat");
