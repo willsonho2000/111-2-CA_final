@@ -48,7 +48,9 @@ for i in range(N):
 f.close()
 print("Particle.dat is saved.\n")
 
+##########################################################
 # Store reference potential
+##########################################################
 # Using brute force
 print("Calculating the potential with brute force...")
 p = Potential(pos,m,h,method='bruteforce')
@@ -76,3 +78,34 @@ for i in range(N):
 
 f.close()
 print("Potential_tree_ref.dat is saved.\n")
+
+##########################################################
+# Store reference acceleration
+##########################################################
+# Using brute force
+print("Calculating the acceleration with brute force...")
+g = Accel(pos,m,h,method='bruteforce')
+f = open("./Accel_bruteforce_ref.dat", "w")
+
+for i in range(N):
+    if i==N-1:
+        f.write("%.16e %.16e %.16e" %(g[i][0], g[i][1], g[i][2]))
+    else:
+        f.write("%.16e %.16e %.16e\n" %(g[i][0], g[i][1], g[i][2]))
+
+f.close()
+print("Accel_bruteforce_ref.dat is saved.\n")
+
+# Using tree
+print("Calculating the acceleration with pytreegrav...")
+g = Accel(pos,m,h,theta=theta, method='tree')
+f = open("./Accel_tree_ref.dat", "w")
+
+for i in range(N):
+    if i==N-1:
+        f.write("%.16e %.16e %.16e" %(g[i][0], g[i][1], g[i][2]))
+    else:
+        f.write("%.16e %.16e %.16e\n" %(g[i][0], g[i][1], g[i][2]))
+
+f.close()
+print("Accel_tree_ref.dat is saved.\n")
