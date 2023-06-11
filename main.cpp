@@ -55,6 +55,30 @@ void WritePot(double *phi, int Npar, string output)
     out.close();
 }
 
+void WriteAcc(double **g, int Npar, string output)
+{
+    ofstream out;
+    out.open(output);
+    out.precision(16);
+    out << scientific; // using scientific notation
+	for (int i = 0; i < Npar; ++i) {
+        if ( i != Npar-1 )
+        {
+            out << g[i][0] << " ";
+            out << g[i][1] << " ";
+            out << g[i][2] << endl;
+        }
+        else
+        {
+            out << g[i][0] << " ";
+            out << g[i][1] << " ";
+            out << g[i][2];
+        }
+        
+	}
+    out.close();
+}
+
 int main( int argc, char* argv[] ) {
     // Use ./main.out ./Particle.dat
     // Basic settings
@@ -95,15 +119,24 @@ int main( int argc, char* argv[] ) {
 
     double start2 = omp_get_wtime(); 
     phi = PotentialTarget_tree(Npar, pos, h, tree, G, theta);
+
+    // Declare the array to store the acceleration
+    double** g = new double*[Npar];
+
+    double start3 = omp_get_wtime(); 
+    g = AccelTarget_tree(Npar, pos, h, tree, G, theta);
     double end   = omp_get_wtime();
 
-    printf("Wall time for building the tree         = %5.3e s\n", start2 - start1);
-    printf("Wall time for calculating the potential = %5.3e s\n", end - start2);
+    printf("Wall time for building the tree            = %5.3e s\n", start2 - start1);
+    printf("Wall time for calculating the potential    = %5.3e s\n", start3 - start2);
+    printf("Wall time for calculating the acceleration = %5.3e s\n", end - start3   );
     printf("\n");
 
     WritePot(phi, Npar, "./Potential_tree.dat");
+    WriteAcc(g, Npar, "./Accel_tree.dat");
 
     printf("The potential is saved to Potential_tree.dat.\n");
+    printf("The acceleration is saved to Accel_tree.dat. \n");
     printf("~ ~ ~ Done ~ ~ ~\n");
 
     delete tree;
@@ -114,6 +147,10 @@ int main( int argc, char* argv[] ) {
         delete[] pos[i];
     }
     delete[] pos;
+    for(int i = 0; i < Npar; i++){
+        delete[] g[i];
+    }
+    delete[] g;
 
     return 0;
 }

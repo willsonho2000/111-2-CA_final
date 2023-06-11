@@ -153,12 +153,30 @@ double PotentialKernel(double r, double h)
     }
 }
 
+double ForceKernel(double r, double h)
+{
+    if ( r>h )
+    return 1./(r*r*r);
+
+    double hinv = 1./h;
+    double q = r*hinv;
+
+    if ( q<=0.5 )
+    {
+        return (10.666666666666666666 + q*q*(-38.4 + 32.*q))*hinv*hinv*hinv;
+    }
+    else
+    {
+        return (21.333333333333 - 48.0 * q + 38.4 * q * q - 10.666666666667 * q * q * q - 0.066666666667 / (q * q * q))*hinv*hinv*hinv;
+    }
+}
+
 double PotentialWalk_quad(double* pos, Octree* tree, double theta, double softening)
 {
     if ( tree == nullptr ) return 0.0;
 
     double phi = 0;
-    double quad[3][3], r5inv;
+    double r5inv;
 
     bool IsParticle = true; // checking whether the current node is a particle
     if ( tree->par == nullptr )   IsParticle = false;
@@ -214,15 +232,111 @@ double PotentialWalk_quad(double* pos, Octree* tree, double theta, double soften
     return phi;
 }
 
-double* PotentialTarget_tree(int Npar, double** pos_target, double* softening_target, Octree* tree, int G, double theta)
+double* AccelWalk_quad(double* pos, Octree* tree, double theta, double softening)
+{
+    double* g = new double[3]{0.};
+    if ( tree == nullptr ) return g;
+
+    double r, r5inv, fac;
+
+    bool IsParticle = true; // checking whether the current node is a particle
+    if ( tree->par == nullptr )   IsParticle = false;
+
+    double r2=0, dx[3] = {};
+    for (int k=0; k<3; k++)
+    {   
+        if ( IsParticle )
+        {
+            dx[k] = tree->par->pos[k] - pos[k];
+        }
+        else
+        {
+            dx[k] = tree->Coordinates[k] - pos[k];
+        }
+        r2+=dx[k]*dx[k];
+    }
+    r = sqrt(r2); // distance between observer and the node
+
+    double h = fmax(tree->Softenings, softening); // softening length
+
+    if ( IsParticle ) // it is a particle
+    {
+        if ( r > 0 ) // itself, we don't calculate self-gravity
+        {
+            if ( r < h)
+            {
+                fac = tree->par->mass * ForceKernel(r,h); 
+            }
+            else
+            {
+                fac = tree->par->mass/(r*r2);
+            } // if ( r < h)
+        } // if ( r > 0 )
+        for (int k=0; k<3; k++) g[k] += fac * dx[k]; // monopole
+    } // if ( IsParticle )
+    else if ( r > fmax(tree->Sizes/theta + tree->Deltas, h+tree->Sizes*0.6+tree->Deltas) ) // satisfy opening criteria
+    {
+        double quad_fac = 0.0;
+        fac = tree->Masses/(r*r2);
+        r5inv = 1 / (r2*r2*r);
+
+        for (int k=0; k<3; k++)
+        {
+            g[k] += fac * dx[k]; // monopole
+            for (int l=0; l<3; l++)
+            quad_fac += tree->Quadrupoles[k][l] * dx[k] * dx[l];
+        }
+        quad_fac *= r5inv / r2;
+
+        for (int k=0; k<3; k++)
+        {
+            g[k] += 2.5 * quad_fac * dx[k];
+            for (int l=0; l<3; l++)
+            quad_fac -= tree->Quadrupoles[k][l] * dx[l] * r5inv;
+        }
+    } // else if ( r > fmax(tree->Sizes/theta + tree->Deltas, h+tree->Sizes*0.6+tree->Deltas) )
+    else
+    {
+        for (int octant=0; octant<8; octant++) // open the node
+        {
+            double* g_node;
+            g_node = AccelWalk_quad(pos, tree->children[octant], theta, softening);
+
+            for (int k=0; k<3; k++) g[k] += g_node[k];
+        }
+    } // else
+
+    return g;
+}
+
+double* PotentialTarget_tree(int Npar, double** pos_target, double* softening_target, Octree* tree, double G, double theta)
 {
     double* result = new double[Npar];
 
-    printf( "Number of threads = %d\n", omp_get_max_threads() );
+    printf( "Number of threads = %d for potential calculation.\n", omp_get_max_threads() );
 
 #   pragma omp parallel for
     for (int i=0; i<Npar; i++)
     result[i] = G*PotentialWalk_quad(pos_target[i], tree, theta, softening_target[i]);
+
+    return result;
+}
+
+double** AccelTarget_tree(int Npar, double** pos_target, double* softening_target, Octree* tree, double G, double theta)
+{
+    double** result = new double*[Npar];
+    for (int i = 0; i < Npar; i++)  result[i] = new double[3];
+
+    printf( "Number of threads = %d for acceleration calculation.\n", omp_get_max_threads() );
+
+#   pragma omp parallel for
+    for (int i=0; i<Npar; i++)
+    {
+        double* g_tree;
+        g_tree = AccelWalk_quad(pos_target[i], tree, theta, softening_target[i]);
+
+        for (int k=0; k<3; k++) result[i][k] = G*g_tree[k];
+    }
 
     return result;
 }

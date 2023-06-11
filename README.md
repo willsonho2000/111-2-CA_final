@@ -48,7 +48,7 @@ Example:
 ```
 _Note: The data should all be saved as **double** type_.
 
-`Potential_tree_ref.dat` and `Potential_bruteforce_ref.dat` will be also generated as reference from [pytreegrav](https://github.com/mikegrudic/pytreegrav).
+`Potential_tree_ref.dat`, `Potential_bruteforce_ref.dat`, `Accel_bruteforce_ref.dat` and `Accel_tree_ref.dat` will be also generated as reference from [pytreegrav](https://github.com/mikegrudic/pytreegrav).
 
 2. Edit `Makefile`, where ***mpicxx*** should be replaced by the compiler which the OpenMP is installed in.
 
@@ -63,7 +63,7 @@ g++-12  octree.cpp treewalk.cpp main.cpp -fopenmp -o main.out
 ./main.out Particle.dat
 ```
 
-`Potential_tree.dat` will be generated and the potential is stored in the same (particle) order of `Particle.dat`.
+`Potential_tree.dat` and `Accel_tree.dat` will be generated and the order is stored in the same (particle) as `Particle.dat`.
 
 4. Use `CalError.py` to compute and compare the errors.
 

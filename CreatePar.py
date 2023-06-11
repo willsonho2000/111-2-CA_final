@@ -1,7 +1,7 @@
 # Usage: python CreatePar.py Npar theta
 import sys
 import numpy as np
-from pytreegrav import Potential
+from pytreegrav import Potential, Accel
 
 def NoNpar(arg):
     if len(arg) <= 2:
@@ -35,7 +35,7 @@ pos = np.random.rand(N,3).astype(np.float64) # positions randomly sampled in the
 m = np.repeat(1./N,N).astype(np.float64) # masses - let the system have unit mass
 h = np.repeat(0.01,N).astype(np.float64) # softening radii
 
-print(" Generating Particle.dat...")
+print("Generating Particle.dat...")
 f = open("./Particle.dat","w")
 f.write("%d %.16e \n"%(N, theta))
 
@@ -48,7 +48,15 @@ for i in range(N):
 f.close()
 print("Particle.dat is saved.\n")
 
+# Check theta
+if theta == 0.0:
+    print("pytreegrav doesn't support theta = 0.0.")
+    print("Reset theta to 0.01")
+    theta = 0.01
+
+##########################################################
 # Store reference potential
+##########################################################
 # Using brute force
 print("Calculating the potential with brute force...")
 p = Potential(pos,m,h,method='bruteforce')
@@ -76,3 +84,34 @@ for i in range(N):
 
 f.close()
 print("Potential_tree_ref.dat is saved.\n")
+
+##########################################################
+# Store reference acceleration
+##########################################################
+# Using brute force
+print("Calculating the acceleration with brute force...")
+g = Accel(pos,m,h,method='bruteforce')
+f = open("./Accel_bruteforce_ref.dat", "w")
+
+for i in range(N):
+    if i==N-1:
+        f.write("%.16e %.16e %.16e" %(g[i][0], g[i][1], g[i][2]))
+    else:
+        f.write("%.16e %.16e %.16e\n" %(g[i][0], g[i][1], g[i][2]))
+
+f.close()
+print("Accel_bruteforce_ref.dat is saved.\n")
+
+# Using tree
+print("Calculating the acceleration with pytreegrav...")
+g = Accel(pos,m,h,theta=theta, method='tree')
+f = open("./Accel_tree_ref.dat", "w")
+
+for i in range(N):
+    if i==N-1:
+        f.write("%.16e %.16e %.16e" %(g[i][0], g[i][1], g[i][2]))
+    else:
+        f.write("%.16e %.16e %.16e\n" %(g[i][0], g[i][1], g[i][2]))
+
+f.close()
+print("Accel_tree_ref.dat is saved.\n")
