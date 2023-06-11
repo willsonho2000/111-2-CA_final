@@ -1,7 +1,7 @@
 # Usage: python CreatePar.py Npar theta
 import sys
 import numpy as np
-from pytreegrav import Potential
+from pytreegrav import Potential, Accel
 
 def NoNpar(arg):
     if len(arg) <= 2:
@@ -35,7 +35,7 @@ pos = np.random.rand(N,3).astype(np.float64) # positions randomly sampled in the
 m = np.repeat(1./N,N).astype(np.float64) # masses - let the system have unit mass
 h = np.repeat(0.01,N).astype(np.float64) # softening radii
 
-print(" Generating Particle.dat...")
+print("Generating Particle.dat...")
 f = open("./Particle.dat","w")
 f.write("%d %.16e \n"%(N, theta))
 
