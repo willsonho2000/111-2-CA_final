@@ -48,6 +48,12 @@ for i in range(N):
 f.close()
 print("Particle.dat is saved.\n")
 
+# Check theta
+if theta == 0.0:
+    print("pytreegrav doesn't support theta = 0.0.")
+    print("Reset theta to 0.01")
+    theta = 0.01
+
 ##########################################################
 # Store reference potential
 ##########################################################
