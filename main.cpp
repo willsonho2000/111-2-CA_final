@@ -133,10 +133,10 @@ int main( int argc, char* argv[] ) {
     printf("\n");
 
     WritePot(phi, Npar, "./Potential_tree.dat");
-    WriteAcc(g, Npar, "./Acc_tree.dat");
+    WriteAcc(g, Npar, "./Accel_tree.dat");
 
     printf("The potential is saved to Potential_tree.dat.\n");
-    printf("The acceleration is saved to Acc_tree.dat. \n");
+    printf("The acceleration is saved to Accel_tree.dat. \n");
     printf("~ ~ ~ Done ~ ~ ~\n");
 
     delete tree;

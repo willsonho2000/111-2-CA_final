@@ -1,1 +1,1 @@
-rm -rf Potential_* Particle.dat Acc_*
+rm -rf Potential_* Particle.dat Accel_*
