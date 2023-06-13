@@ -15,6 +15,7 @@ int octant_offset[8][3] =  {{-1,-1,-1},
 
 Particle::Particle() {
     pos[0] = pos[1] = pos[2] = 0.;
+    vel[0] = vel[1] = vel[2] = 0.;
     mass = -1.;
     softening = -1.;
 }
@@ -22,6 +23,7 @@ Particle::Particle() {
 
 Particle::Particle( double* position, double m, double soft ) {
     for ( int i = 0; i < 3; i++ ) pos[i] = position[i];
+    vel[0] = vel[1] = vel[2] = 0.;
     mass = m;
     softening = soft;
 }
@@ -30,12 +32,14 @@ Particle::Particle( double a, double b, double c, double m, double soft ) {
     pos[0] = a;
     pos[1] = b;
     pos[2] = c;
+    vel[0] = vel[1] = vel[2] = 0.;
     mass = m;
     softening = soft;
 }
 
 Particle::Particle( int* position, double m, double soft ) {
     for ( int i = 0; i < 3; i++ ) pos[i] = position[i];
+    vel[0] = vel[1] = vel[2] = 0.;
     mass = m;
     softening = soft;
 }
@@ -160,6 +164,7 @@ void Octree::BuildTree( double** points, double* masses, double* softenings ) {
 
         // delcare a new node then insert it
         Particle* i_par = new Particle( pos, masses[i], softenings[i] );
+        i_par->index = i;
 
         int i_octant = FindQuad( pos, this->Coordinates );
         this->Insert( i_par, i_octant );

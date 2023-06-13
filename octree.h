@@ -3,8 +3,10 @@
 
 struct Particle {
     double pos[3];
+    double vel[3];
     double mass;
     double softening;
+    int index;              // record the order in Particle.dat
 
     Particle();
     Particle( double* position, double m, double soft );
