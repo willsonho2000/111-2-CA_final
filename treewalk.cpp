@@ -292,7 +292,7 @@ double* AccelWalk_quad(double* pos, Octree* tree, double theta, double softening
         {
             g[k] += 2.5 * quad_fac * dx[k];
             for (int l=0; l<3; l++)
-            quad_fac -= tree->Quadrupoles[k][l] * dx[l] * r5inv;
+            g[k] -= tree->Quadrupoles[k][l] * dx[l] * r5inv;
         }
     } // else if ( r > fmax(tree->Sizes/theta + tree->Deltas, h+tree->Sizes*0.6+tree->Deltas) )
     else
