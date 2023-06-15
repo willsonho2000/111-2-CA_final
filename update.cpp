@@ -13,7 +13,7 @@ void tree_update( Octree* tree, double timestep, double** g ) {
 
         // update the positions and velocity of the particle
         for ( int j = 0; j < 3; j++ ) {
-            par_target->pos[j] += par_target->vel[i]*timestep + 0.5*g[i][j]*pow( timestep, 2 );
+            par_target->pos[j] += par_target->vel[j]*timestep + 0.5*g[i][j]*pow( timestep, 2 );
             par_target->vel[j] += g[i][j]*timestep;
         }
         
@@ -29,8 +29,6 @@ void tree_update( Octree* tree, double timestep, double** g ) {
                 reinsert = 1;
         }
         
-        std::cout << par_pos[0] << " " << par_pos[1] << " " << par_pos[2] << " " << reinsert << "\n";
-
         if ( reinsert ) {
             nod_target->par = nullptr;
             
@@ -38,4 +36,8 @@ void tree_update( Octree* tree, double timestep, double** g ) {
             tree->Insert( par_target, i_octant );
         }
     }
+
+    // Calculate the quadrupole of the new tree
+    // double mass, com[3], hmax; 
+    // ComputeMoments( &mass, com, &hmax, tree );
 }

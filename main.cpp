@@ -5,6 +5,7 @@
 #include <omp.h>
 #include "octree.h"
 #include "treewalk.h"
+#include "update.h"
 
 using namespace std;
 
@@ -79,6 +80,42 @@ void WriteAcc(double **g, int Npar, string output)
     out.close();
 }
 
+void WriteParticle(Octree *tree, int Npar, double theta, string output)
+{
+    ofstream out;
+    out.open(output);
+    out.precision(16);
+    out << scientific; // using scientific notation
+
+    out << Npar << " ";
+    out << theta << "\n";
+
+	for (int i = 0; i < Npar; ++i) {
+        double *pos = tree->partree_arr[i]->par->pos;
+        double m    = tree->partree_arr[i]->par->mass;
+        double h    = tree->partree_arr[i]->par->softening;
+
+        if ( i != Npar-1 )
+        {
+            out << pos[0] << " ";
+            out << pos[1] << " ";
+            out << pos[2] << " ";
+            out << m      << " ";
+            out << h      << endl;
+        }
+        else
+        {
+            out << pos[0] << " ";
+            out << pos[1] << " ";
+            out << pos[2] << " ";
+            out << m      << " ";
+            out << h;
+        }
+        
+	}
+    out.close();
+}
+
 int main( int argc, char* argv[] ) {
     // Use ./main.out ./Particle.dat
     // Basic settings
@@ -137,6 +174,13 @@ int main( int argc, char* argv[] ) {
 
     printf("The potential is saved to Potential_tree.dat.\n");
     printf("The acceleration is saved to Accel_tree.dat. \n");
+
+    for ( int i = 1; i < 10; i++ ) {
+        double t = 0.08;
+        tree_update( tree, t, g );
+        WriteParticle( tree, Npar, theta, "./Timestep0" + to_string( (int) i ) + ".dat");
+    }
+    
     printf("~ ~ ~ Done ~ ~ ~\n");
 
     delete tree;
