@@ -177,14 +177,20 @@ int main( int argc, char* argv[] ) {
 
     WriteParticle( tree, Npar, theta, "./Timestep00.dat");
 
-    for ( int i = 1; i < 10; i++ ) {
+    for ( int i = 1; i < 100; i++ ) {
         
-        double t = 0.02;
+        double t = 0.01;
         
         tree_update( tree, t, g );
+        for (int j = 0; j < Npar; j++) {
+            Particle *cur_par = tree->partree_arr[j]->par;
+            for (int k = 0; k < 3; k++)
+                pos[j][k] = cur_par->pos[k];
+        }
         g = AccelTarget_tree( Npar, pos, h, tree, G, theta );
 
-        WriteParticle( tree, Npar, theta, "./Timestep0" + to_string( (int) i ) + ".dat");
+        if (i%10 == 0)
+            WriteParticle( tree, Npar, theta, "./Timestep0" + to_string( (int) i/10 ) + ".dat");
     }
     
     printf("~ ~ ~ Done ~ ~ ~\n");
