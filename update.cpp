@@ -3,7 +3,7 @@
 #include "octree.h"
 #include "treewalk.h"
 
-void remove_node (Octree* tree, double* node_pos) {
+void remove_node (Octree* pre_node, int to_octant, Octree* tree, double* node_pos) {
     
     // Don't proceed for nullptr
     if (tree == nullptr) return;
@@ -27,7 +27,28 @@ void remove_node (Octree* tree, double* node_pos) {
         tree->children[octant] = nullptr;
     }
     else {  // or, keep going to the next level
-        remove_node(tree->children[octant], node_pos);
+        remove_node(tree, octant, tree->children[octant], node_pos);
+
+        // remove unecessary node
+        int count = 0;
+        for (int i = 0; i < 8; i++) {
+            if (tree->children[i] != nullptr) count++;
+        }
+
+        if (count == 0) {
+
+            // remove
+            delete[] tree->Coordinates;
+            for( int i = 0; i < 3; i++ ){
+                delete[] tree->Quadrupoles[i];
+            }
+            delete[] tree->Quadrupoles;
+            delete[] tree->com;
+            target->children.clear();
+
+            delete tree;
+            tree->children[to_octant] = nullptr;
+        }
     }
 
     return;
@@ -65,7 +86,7 @@ void tree_update (Octree* tree, double timestep, double** g) {
             int i_octant = tree->FindQuad( par_target->pos, tree->Coordinates );
             tree->Insert( par_target, i_octant );
 
-            remove_node(tree, nod_target->Coordinates);
+            remove_node(nullptr, 0, tree, nod_target->Coordinates);
         }
     }
 

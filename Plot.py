@@ -10,7 +10,7 @@ plt.xlim(0, 1)
 plt.ylim(0, 1)
 plt.savefig("00.png")
 
-for i in range(1, 10):
+for i in range(1, 11):
     Timestep    = np.loadtxt('Timestep%02d.dat' % (i), skiprows=1)
     plt.figure(figsize=(8,6))
     plt.scatter(Timestep[:, 0], Timestep[:, 1], s=5)

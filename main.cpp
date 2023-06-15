@@ -162,24 +162,20 @@ int main( int argc, char* argv[] ) {
 
     double start3 = omp_get_wtime(); 
     g = AccelTarget_tree(Npar, pos, h, tree, G, theta);
-    double end   = omp_get_wtime();
+    double start4   = omp_get_wtime();
 
-    printf("Wall time for building the tree            = %5.3e s\n", start2 - start1);
-    printf("Wall time for calculating the potential    = %5.3e s\n", start3 - start2);
-    printf("Wall time for calculating the acceleration = %5.3e s\n", end - start3   );
-    printf("\n");
 
     WritePot(phi, Npar, "./Potential_tree.dat");
     WriteAcc(g, Npar, "./Accel_tree.dat");
 
     printf("The potential is saved to Potential_tree.dat.\n");
-    printf("The acceleration is saved to Accel_tree.dat. \n");
+    printf("The acceleration is saved to Accel_tree.dat. \n\n");
 
     WriteParticle( tree, Npar, theta, "./Timestep00.dat");
 
     for ( int i = 1; i < 101; i++ ) {
         
-        double t = 0.005;
+        double t = 0.001;
         
         tree_update( tree, t, g );
         for (int j = 0; j < Npar; j++) {
@@ -200,7 +196,14 @@ int main( int argc, char* argv[] ) {
             }
         }
     }
+    double end   = omp_get_wtime();
     
+    printf("\n");
+    printf("Wall time for building the tree              = %5.3e s\n", start2 - start1);
+    printf("Wall time for calculating the potential      = %5.3e s\n", start3 - start2);
+    printf("Wall time for calculating the acceleration   = %5.3e s\n", start4 - start3);
+    printf("Wall time for evaluating particles' position = %5.3e s\n", end - start4   );
+    printf("\n");
     printf("~ ~ ~ Done ~ ~ ~\n");
 
     delete tree;
