@@ -177,9 +177,9 @@ int main( int argc, char* argv[] ) {
 
     WriteParticle( tree, Npar, theta, "./Timestep00.dat");
 
-    for ( int i = 1; i < 100; i++ ) {
+    for ( int i = 1; i < 101; i++ ) {
         
-        double t = 0.003;
+        double t = 0.005;
         
         tree_update( tree, t, g );
         for (int j = 0; j < Npar; j++) {
@@ -189,8 +189,16 @@ int main( int argc, char* argv[] ) {
         }
         g = AccelTarget_tree( Npar, pos, h, tree, G, theta );
 
-        if (i%10 == 0)
-            WriteParticle( tree, Npar, theta, "./Timestep0" + to_string( (int) i/10 ) + ".dat");
+        if (i % 10 == 0) {
+            if (i < 100) {
+                WriteParticle( tree, Npar, theta, "./Timestep0" + to_string(i / 10) + ".dat");
+                std::cout << " Write  " << i/10 << "th timestep " << t*i << " s file.\n";
+            }
+            else {
+                WriteParticle( tree, Npar, theta, "./Timestep" + to_string(i / 10) + ".dat");
+                std::cout << " Write " << i/10 << "th timestep " << t*i << " s file.\n";
+            }
+        }
     }
     
     printf("~ ~ ~ Done ~ ~ ~\n");

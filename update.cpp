@@ -3,7 +3,37 @@
 #include "octree.h"
 #include "treewalk.h"
 
-void tree_update( Octree* tree, double timestep, double** g ) {
+void remove_node (Octree* tree, double* node_pos) {
+    
+    // Don't proceed for nullptr
+    if (tree == nullptr) return;
+
+    // Find where the node is
+    int octant = tree->FindQuad(node_pos, tree->Coordinates);
+    Octree *target = tree->children[octant];
+    
+    int remove = 0;
+    for (int i = 0; i < 3; i++) {
+        if (target->Coordinates[i] == node_pos[i])
+            remove = 1;
+    }
+
+    // if find the node, free the memory
+    if (remove == 1) {
+        delete[] target->Coordinates;
+        target->children.clear();
+
+        delete target;
+        tree->children[octant] = nullptr;
+    }
+    else {  // or, keep going to the next level
+        remove_node(tree->children[octant], node_pos);
+    }
+
+    return;
+}
+
+void tree_update (Octree* tree, double timestep, double** g) {
     
     for ( int i = 0; i < tree->NumNodes; i++ ) {
         
@@ -31,12 +61,11 @@ void tree_update( Octree* tree, double timestep, double** g ) {
         
         if ( reinsert ) {
             nod_target->par = nullptr;
-            nod_target->com = new double[3]{0.};
-            nod_target->Quadrupoles = new double*[3];
-            for ( int i = 0; i < 3; i++ ) nod_target->Quadrupoles[i] = new double[3]{0.};
             
             int i_octant = tree->FindQuad( par_target->pos, tree->Coordinates );
             tree->Insert( par_target, i_octant );
+
+            remove_node(tree, nod_target->Coordinates);
         }
     }
 

@@ -1,5 +1,5 @@
 #include <iostream>
 
-void tree_update( Octree* tree, double timestep, double** g );
+void remove_node (Octree* tree, double* node_pos);
 
-// Octree* find_par( Octree* tree, int target );
+void tree_update (Octree* tree, double timestep, double** g);
