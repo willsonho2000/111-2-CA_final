@@ -108,25 +108,17 @@ void Octree::Insert( Particle* new_par, int octant ) {
             // turn the node to a tree
             this->children[octant]->par = nullptr;
 
-            // set the tree Coordinates, quadrupoles and sizes
-            // this->children[octant]->Sizes = this->Sizes/2.;
-            // this->children[octant]->Coordinates = new double[3]{0.};
+            // set the tree's center of mass and quadrupoles
             this->children[octant]->com = new double[3]{0.};
             this->children[octant]->Quadrupoles = new double*[3];
             for ( int i = 0; i < 3; i++ ) this->children[octant]->Quadrupoles[i] = new double[3]{0.};
-
-            // set the value of Coordinates
-            // double* cur_coord = this->Coordinates;
-            // double* child_coor = this->children[octant]->Coordinates;
-            // for ( int i = 0; i < 3; i++ ) {
-            //     child_coor[i] = cur_coord[i] + this->Sizes*0.25*( double )octant_offset[octant][i];
-            // }
 
             // put the pre-existing particle into the new tree
             int child_octant = FindQuad( child_par->pos, this->children[octant]->Coordinates );
             this->children[octant]->children[child_octant] = new Octree( child_par, this->root );
             this->root->partree_arr[child_par->index] = this->children[octant]->children[child_octant];
 
+            // set the tree's coordinates and sizes
             this->children[octant]->children[child_octant]->Sizes = this->children[octant]->Sizes/2.;
             this->children[octant]->children[child_octant]->Coordinates = new double[3]{0.};
 
