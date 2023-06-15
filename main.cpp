@@ -179,7 +179,7 @@ int main( int argc, char* argv[] ) {
 
     for ( int i = 1; i < 100; i++ ) {
         
-        double t = 0.01;
+        double t = 0.003;
         
         tree_update( tree, t, g );
         for (int j = 0; j < Npar; j++) {

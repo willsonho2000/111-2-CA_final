@@ -327,7 +327,7 @@ double** AccelTarget_tree(int Npar, double** pos_target, double* softening_targe
     double** result = new double*[Npar];
     for (int i = 0; i < Npar; i++)  result[i] = new double[3];
 
-    printf( "Number of threads = %d for acceleration calculation.\n", omp_get_max_threads() );
+    // printf( "Number of threads = %d for acceleration calculation.\n", omp_get_max_threads() );
 
 #   pragma omp parallel for
     for (int i=0; i<Npar; i++)
