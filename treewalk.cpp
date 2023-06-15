@@ -72,7 +72,7 @@ void ComputeMoments( double* mass, double com[3], double* hmax, Octree* tree )
             }
             else {
                 quadi = tree->children[octant]->Quadrupoles;
-                comi  = tree->children[octant]->Coordinates;
+                comi  = tree->children[octant]->com;
                 mi    = tree->children[octant]->Masses;
             }
 
@@ -97,13 +97,13 @@ void ComputeMoments( double* mass, double com[3], double* hmax, Octree* tree )
         double delta = (double)0;
         for ( int dim=0; dim<3; dim++ )
         {
-            double dx = com0[dim] - tree->Coordinates[dim];
+            double dx = com0[dim] - tree->com[dim];
             delta += pow( dx, 2 );
         } // for (int dim=0; dim<3; dim++)
 
         // update tree properties
         tree->Masses      = m0;
-        for ( int i = 0; i < 3; i++ ) tree->Coordinates[i] = com0[i];
+        for ( int i = 0; i < 3; i++ ) tree->com[i] = com0[i];
         tree->Softenings  = hmax0;
         double** quadi = tree->Quadrupoles;
         tree->Quadrupoles = quad;
@@ -190,7 +190,7 @@ double PotentialWalk_quad(double* pos, Octree* tree, double theta, double soften
         }
         else
         {
-            dx[k] = tree->Coordinates[k] - pos[k];
+            dx[k] = tree->com[k] - pos[k];
         }
         r+=dx[k]*dx[k];
     }
@@ -251,7 +251,7 @@ double* AccelWalk_quad(double* pos, Octree* tree, double theta, double softening
         }
         else
         {
-            dx[k] = tree->Coordinates[k] - pos[k];
+            dx[k] = tree->com[k] - pos[k];
         }
         r2+=dx[k]*dx[k];
     }
