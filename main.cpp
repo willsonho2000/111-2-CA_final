@@ -175,9 +175,15 @@ int main( int argc, char* argv[] ) {
     printf("The potential is saved to Potential_tree.dat.\n");
     printf("The acceleration is saved to Accel_tree.dat. \n");
 
+    WriteParticle( tree, Npar, theta, "./Timestep00.dat");
+
     for ( int i = 1; i < 10; i++ ) {
-        double t = 0.08;
+        
+        double t = 0.02;
+        
         tree_update( tree, t, g );
+        g = AccelTarget_tree( Npar, pos, h, tree, G, theta );
+
         WriteParticle( tree, Npar, theta, "./Timestep0" + to_string( (int) i ) + ".dat");
     }
     

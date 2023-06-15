@@ -31,6 +31,9 @@ void tree_update( Octree* tree, double timestep, double** g ) {
         
         if ( reinsert ) {
             nod_target->par = nullptr;
+            nod_target->com = new double[3]{0.};
+            nod_target->Quadrupoles = new double*[3];
+            for ( int i = 0; i < 3; i++ ) nod_target->Quadrupoles[i] = new double[3]{0.};
             
             int i_octant = tree->FindQuad( par_target->pos, tree->Coordinates );
             tree->Insert( par_target, i_octant );
@@ -38,6 +41,6 @@ void tree_update( Octree* tree, double timestep, double** g ) {
     }
 
     // Calculate the quadrupole of the new tree
-    // double mass, com[3], hmax; 
-    // ComputeMoments( &mass, com, &hmax, tree );
+    double mass, com[3], hmax; 
+    ComputeMoments( &mass, com, &hmax, tree );
 }

@@ -95,7 +95,7 @@ void ComputeMoments( double* mass, double com[3], double* hmax, Octree* tree )
         } // for (int octant=0; octant<8; octant++)
 
         double delta = (double)0;
-        for ( int dim=0; dim<3; dim++ )
+        for ( int dim = 0; dim < 3; dim++ )
         {
             double dx = com0[dim] - tree->com[dim];
             delta += pow( dx, 2 );
@@ -292,7 +292,7 @@ double* AccelWalk_quad(double* pos, Octree* tree, double theta, double softening
         {
             g[k] += 2.5 * quad_fac * dx[k];
             for (int l=0; l<3; l++)
-            quad_fac -= tree->Quadrupoles[k][l] * dx[l] * r5inv;
+            g[k] -= tree->Quadrupoles[k][l] * dx[l] * r5inv;
         }
     } // else if ( r > fmax(tree->Sizes/theta + tree->Deltas, h+tree->Sizes*0.6+tree->Deltas) )
     else
