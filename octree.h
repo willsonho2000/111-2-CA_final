@@ -6,7 +6,6 @@ struct Particle {
     double vel[3];
     double mass;
     double softening;
-    // Octree* node;           // point to the node where particle at
     int index;              // record the order in Particle.dat
 
     Particle();
@@ -30,7 +29,7 @@ public:
     double* Coordinates;    // the center position of the grid
     double* com;            // the center of mass of the grid
     double** Quadrupoles;   // set quadrapoles
-    std::vector<Particle*> par_arr;  // set the particle's pointer
+    std::vector<Octree*> partree_arr;  // set the tree of the particle's pointer
 
     // initialization an empty tree
     Octree( int N, double** points, double* masses, double* softening );

@@ -8,8 +8,8 @@ void tree_update( Octree* tree, double timestep, double** g ) {
     for ( int i = 0; i < tree->NumNodes; i++ ) {
         
         // walk through every particle in the tree
-        Particle* par_target = tree->par_arr[i];
-        Octree*   nod_target = par_target->node;
+        Octree*   nod_target = tree->partree_arr[i];
+        Particle* par_target = nod_target->par;
 
         // update the positions and velocity of the particle
         for ( int j = 0; j < 3; j++ ) {
@@ -19,10 +19,20 @@ void tree_update( Octree* tree, double timestep, double** g ) {
         
         // check whether particle run outside the grid
         int reinsert = 0;
-        if ( par_target )
+        double* par_pos  = par_target->pos;
+        double* tree_pos = nod_target->Coordinates;
+        double  size     = nod_target->Sizes; 
+
+        for ( int j = 0; j < 3; j++ ) {
+            if ( par_pos[j] > tree_pos[j] + size || par_pos[j] < tree_pos[j] + size ) 
+                reinsert = 1;
+        }
+
+        if ( reinsert ) {
+            nod_target->par = nullptr;
+            
+            int i_octant = FindQuad( par_target->pos, tree->Coordinates );
+            tree->Insert( par_target, i_octant );
+        }
     }
-}
-
-Octree* find_par( Octree* tree, int target ) {
-
 }
