@@ -47,7 +47,7 @@ void remove_node (Octree* pre_node, int to_octant, Octree* tree, double* node_po
             target->children.clear();
 
             delete tree;
-            tree->children[to_octant] = nullptr;
+            pre_node->children[to_octant] = nullptr;
         }
     }
 
