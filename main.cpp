@@ -97,6 +97,7 @@ void WriteParticle(Octree *tree, int Npar, double theta, string output)
 
 	for (int i = 0; i < Npar; ++i) {
         double *pos = tree->partree_arr[i]->par->pos;
+        double *vel = tree->partree_arr[i]->par->vel;
         double m    = tree->partree_arr[i]->par->mass;
         double h    = tree->partree_arr[i]->par->softening;
 
@@ -105,6 +106,9 @@ void WriteParticle(Octree *tree, int Npar, double theta, string output)
             out << pos[0] << " ";
             out << pos[1] << " ";
             out << pos[2] << " ";
+            out << vel[0] << " ";
+            out << vel[1] << " ";
+            out << vel[2] << " ";
             out << m      << " ";
             out << h      << endl;
         }
@@ -113,6 +117,9 @@ void WriteParticle(Octree *tree, int Npar, double theta, string output)
             out << pos[0] << " ";
             out << pos[1] << " ";
             out << pos[2] << " ";
+            out << vel[0] << " ";
+            out << vel[1] << " ";
+            out << vel[2] << " ";
             out << m      << " ";
             out << h;
         }
@@ -128,7 +135,7 @@ int main( int argc, char* argv[] ) {
     const int    G     =   1;
     const int    NThread = 4;
 
-    double        dt = 0.001;
+    double        dt = 0.0009;
     int      StepEnd = 1000;
     int     DumpStep = 50;
     omp_set_num_threads( NThread );

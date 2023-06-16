@@ -18,3 +18,4 @@ for data in file_list:
     ax.set_xlim(-1, 2)
     ax.set_ylim(-1, 2)
     plt.savefig('./Projection_Par/'+image_name, dpi=150,bbox_inches='tight')
+    plt.close()
