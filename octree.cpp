@@ -21,9 +21,9 @@ Particle::Particle() {
 }
 
 
-Particle::Particle( double* position, double m, double soft ) {
+Particle::Particle( double* position, double* velocity, double m, double soft ) {
     for ( int i = 0; i < 3; i++ ) pos[i] = position[i];
-    vel[0] = vel[1] = vel[2] = 0.;
+    for ( int i = 0; i < 3; i++ ) vel[i] = velocity[i];
     mass = m;
     softening = soft;
 }
@@ -37,15 +37,15 @@ Particle::Particle( double a, double b, double c, double m, double soft ) {
     softening = soft;
 }
 
-Particle::Particle( int* position, double m, double soft ) {
+Particle::Particle( int* position, double* velocity, double m, double soft ) {
     for ( int i = 0; i < 3; i++ ) pos[i] = position[i];
-    vel[0] = vel[1] = vel[2] = 0.;
+    for ( int i = 0; i < 3; i++ ) vel[i] = velocity[i];
     mass = m;
     softening = soft;
 }
 
 // initialization
-Octree::Octree( int N, double** points, double* masses, double* softening ) {
+Octree::Octree( int N, double** points, double** velocity, double* masses, double* softening ) {
 
     this->par = nullptr;
     // Assign nullptr to the children
@@ -63,7 +63,7 @@ Octree::Octree( int N, double** points, double* masses, double* softening ) {
     // Assign nullptr to the particle array (only do this for root node)
     partree_arr.assign( N, nullptr );
 
-    this->BuildTree( points, masses, softening );
+    this->BuildTree( points, velocity, masses, softening );
     double mass, com[3], hmax; 
     ComputeMoments( &mass, com, &hmax, this );
 }
@@ -156,7 +156,7 @@ void Octree::Insert( Particle* new_par, int octant ) {
     }
 }
 
-void Octree::BuildTree( double** points, double* masses, double* softenings ) {
+void Octree::BuildTree( double** points, double** velocity, double* masses, double* softenings ) {
     
     // record the max and the min of x, y, z
     for ( int i = 0; i < 3; i++ ) {
@@ -179,9 +179,10 @@ void Octree::BuildTree( double** points, double* masses, double* softenings ) {
     // store the data into a new node and insert it into the tree
     for ( int i = 0; i < this->NumNodes; i++ ) {
         double* pos = points[i];
+        double* vel = velocity[i];
 
         // delcare a new node then insert it
-        Particle* i_par = new Particle( pos, masses[i], softenings[i] );
+        Particle* i_par = new Particle( pos, vel, masses[i], softenings[i] );
         i_par->index = i;
         // this->par_arr[i] = i_par;
 

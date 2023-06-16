@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void ReadPar(int Npar, double** pos, double* m, double* h, string input)
+void ReadPar(int Npar, double** pos, double** v, double* m, double* h, string input)
 {
     ifstream in;
     in.open(input);
@@ -30,6 +30,9 @@ void ReadPar(int Npar, double** pos, double* m, double* h, string input)
         in >> pos[i][0];
         in >> pos[i][1];
         in >> pos[i][2];
+        in >> v[i][0];
+        in >> v[i][1];
+        in >> v[i][2];
         in >> m[i];
         in >> h[i];
     }
@@ -147,15 +150,17 @@ int main( int argc, char* argv[] ) {
     // Declare particle's properties
     double** pos = new double*[Npar];
     for (int i=0; i<Npar; i++) pos[i] = new double[3];
+    double** v = new double*[Npar];
+    for (int i=0; i<Npar; i++) v[i] = new double[3];
 
     double* m = new double[Npar];
     double* h = new double[Npar];
 
     // Store particles' properties
-    ReadPar(Npar, pos, m, h, input);
+    ReadPar(Npar, pos, v, m, h, input);
 
     double start1 = omp_get_wtime(); 
-    Octree* tree = new Octree( Npar, pos, m, h );
+    Octree* tree = new Octree( Npar, pos, v, m, h );
 
     // Declare the array to store the potential
     double* phi = new double[Npar];

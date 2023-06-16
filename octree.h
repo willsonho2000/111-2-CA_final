@@ -9,9 +9,9 @@ struct Particle {
     int index;              // record the order in Particle.dat
 
     Particle();
-    Particle( double* position, double m, double soft );
+    Particle( double* position, double* velocity, double m, double soft );
     Particle( double a, double b, double c, double m, double soft );
-    Particle( int* position, double m, double soft );
+    Particle( int* position, double* velocity, double m, double soft );
 };
 
 class Octree {
@@ -32,10 +32,10 @@ public:
     std::vector<Octree*> partree_arr;  // set the tree of the particle's pointer
 
     // initialization an empty tree
-    Octree( int N, double** points, double* masses, double* softening );
+    Octree( int N, double** points, double** velocity, double* masses, double* softening );
     Octree( Particle* root_par, Octree* root_ptr );    // initialize a new particle
 
     void Insert( Particle* new_par, int octant );
-    void BuildTree( double** points, double* masses, double* softenings ); // maybe can just call it once
+    void BuildTree( double** points, double** velocity, double* masses, double* softenings ); // maybe can just call it once
     int FindQuad( double* pos, double* ref );  // decide which quad the particle will be inserted to
 };

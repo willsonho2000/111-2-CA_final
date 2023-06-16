@@ -15,6 +15,6 @@ for data in file_list:
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(111)
     ax.scatter(info[:, 0], info[:, 1], s=5)
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
+    ax.set_xlim(-1, 2)
+    ax.set_ylim(-1, 2)
     plt.savefig('./Projection_Par/'+image_name, dpi=150,bbox_inches='tight')
