@@ -82,11 +82,11 @@ void tree_update (Octree* tree, double timestep, double** g) {
         
         if ( reinsert ) {
             nod_target->par = nullptr;
+            remove_node(nullptr, 0, tree, nod_target->Coordinates);
             
             int i_octant = tree->FindQuad( par_target->pos, tree->Coordinates );
             tree->Insert( par_target, i_octant );
-
-            remove_node(nullptr, 0, tree, nod_target->Coordinates);
+            
         }
     }
 
