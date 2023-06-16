@@ -1,5 +1,7 @@
-#include <iostream>
 #include <cstdio>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
 #include <cstdlib>
 #include <fstream>
 #include <omp.h>
@@ -9,7 +11,7 @@
 
 using namespace std;
 
-void ReadPar(int Npar, double** pos, double* m, double* h, string input)
+void ReadPar(int Npar, double** pos, double** v, double* m, double* h, string input)
 {
     ifstream in;
     in.open(input);
@@ -28,6 +30,9 @@ void ReadPar(int Npar, double** pos, double* m, double* h, string input)
         in >> pos[i][0];
         in >> pos[i][1];
         in >> pos[i][2];
+        in >> v[i][0];
+        in >> v[i][1];
+        in >> v[i][2];
         in >> m[i];
         in >> h[i];
     }
@@ -122,6 +127,10 @@ int main( int argc, char* argv[] ) {
     string input = argv[1];
     const int    G     =   1;
     const int    NThread = 4;
+
+    double        dt = 0.001;
+    int      StepEnd = 1000;
+    int     DumpStep = 50;
     omp_set_num_threads( NThread );
 
     // Read the number of particle
@@ -141,15 +150,17 @@ int main( int argc, char* argv[] ) {
     // Declare particle's properties
     double** pos = new double*[Npar];
     for (int i=0; i<Npar; i++) pos[i] = new double[3];
+    double** v = new double*[Npar];
+    for (int i=0; i<Npar; i++) v[i] = new double[3];
 
     double* m = new double[Npar];
     double* h = new double[Npar];
 
     // Store particles' properties
-    ReadPar(Npar, pos, m, h, input);
+    ReadPar(Npar, pos, v, m, h, input);
 
     double start1 = omp_get_wtime(); 
-    Octree* tree = new Octree( Npar, pos, m, h );
+    Octree* tree = new Octree( Npar, pos, v, m, h );
 
     // Declare the array to store the potential
     double* phi = new double[Npar];
@@ -168,16 +179,14 @@ int main( int argc, char* argv[] ) {
     WritePot(phi, Npar, "./Potential_tree.dat");
     WriteAcc(g, Npar, "./Accel_tree.dat");
 
-    printf("The potential is saved to Potential_tree.dat.\n");
-    printf("The acceleration is saved to Accel_tree.dat. \n\n");
+    printf("The initial potential is saved to Potential_tree.dat.\n");
+    printf("The initial acceleration is saved to Accel_tree.dat. \n\n");
 
-    WriteParticle( tree, Npar, theta, "./Timestep00.dat");
+    WriteParticle( tree, Npar, theta, "./Data_00000.dat");
 
-    for ( int i = 1; i < 101; i++ ) {
-        
-        double t = 0.008;
-        
-        tree_update( tree, t, g );
+    int DumIdx = 1;
+    for (int Step=0; Step < StepEnd; Step++){
+        tree_update( tree, dt, g );
         for (int j = 0; j < Npar; j++) {
             Particle *cur_par = tree->partree_arr[j]->par;
             for (int k = 0; k < 3; k++)
@@ -185,24 +194,22 @@ int main( int argc, char* argv[] ) {
         }
         g = AccelTarget_tree( Npar, pos, h, tree, G, theta );
 
-        if (i % 5 == 0) {
-            if (i < 50) {
-                WriteParticle( tree, Npar, theta, "./Timestep0" + to_string(i / 5) + ".dat");
-                std::cout << " Write  " << i/5 << "th timestep " << t*i << " s file.\n";
-            }
-            else {
-                WriteParticle( tree, Npar, theta, "./Timestep" + to_string(i / 5) + ".dat");
-                std::cout << " Write " << i/5 << "th timestep " << t*i << " s file.\n";
-            }
+        if (Step % DumpStep == 0.0) {
+            ostringstream DumpNum;
+            DumpNum << setw(5) << setfill('0') << DumIdx;
+            string DumpName = "Data_" + DumpNum.str() + ".dat";
+            WriteParticle( tree, Npar, theta, DumpName);
+            printf("Writing %s ...\n", DumpName.c_str());
+            DumIdx ++;
         }
     }
     double end   = omp_get_wtime();
     
     printf("\n");
-    printf("Wall time for building the tree              = %5.3e s\n", start2 - start1);
-    printf("Wall time for calculating the potential      = %5.3e s\n", start3 - start2);
-    printf("Wall time for calculating the acceleration   = %5.3e s\n", start4 - start3);
-    printf("Wall time for evaluating particles' position = %5.3e s\n", end - start4   );
+    printf("Wall time for building the tree (one step)              = %5.3e s\n", start2 - start1);
+    printf("Wall time for calculating the potential (one step)      = %5.3e s\n", start3 - start2);
+    printf("Wall time for calculating the acceleration (one step)   = %5.3e s\n", start4 - start3);
+    printf("Wall time for updating particles' position              = %5.3e s\n", end - start4   );
     printf("\n");
     printf("~ ~ ~ Done ~ ~ ~\n");
 

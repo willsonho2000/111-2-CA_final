@@ -33,6 +33,7 @@ print("theta = ", theta)
 
 pos = np.random.rand(N,3).astype(np.float64) # positions randomly sampled in the unit cube
 m = np.repeat(1./N,N).astype(np.float64) # masses - let the system have unit mass
+v = 0.5*(np.random.rand(N,3).astype(np.float64) - 0.5) # velocity randomly sampled
 h = np.repeat(0.01,N).astype(np.float64) # softening radii
 
 print("Generating Particle.dat...")
@@ -41,9 +42,9 @@ f.write("%d %.16e \n"%(N, theta))
 
 for i in range(N):
     if i==N-1:
-        f.write("%.16e %.16e %.16e %.16e %.16e" %(pos[i, 0], pos[i, 1], pos[i, 2], m[i], h[i]))
+        f.write("%.16e %.16e %.16e %.16e %.16e %.16e %.16e %.16e" %(pos[i, 0], pos[i, 1], pos[i, 2], v[i, 0], v[i, 1], v[i, 2], m[i], h[i]))
     else:
-        f.write("%.16e %.16e %.16e %.16e %.16e\n" %(pos[i, 0], pos[i, 1], pos[i, 2], m[i], h[i]))
+        f.write("%.16e %.16e %.16e %.16e %.16e %.16e %.16e %.16e\n" %(pos[i, 0], pos[i, 1], pos[i, 2], v[i, 0], v[i, 1], v[i, 2], m[i], h[i]))
 
 f.close()
 print("Particle.dat is saved.\n")

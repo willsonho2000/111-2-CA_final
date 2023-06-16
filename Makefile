@@ -4,5 +4,3 @@ all: octree.cpp treewalk.cpp main.cpp
 
 clean:
 	rm -f *.out
-	rm -f Timestep*.dat
-	rm -f *.png
