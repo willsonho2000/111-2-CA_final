@@ -124,6 +124,10 @@ int main( int argc, char* argv[] ) {
     string input = argv[1];
     const int    G     =   1;
     const int    NThread = 4;
+
+    double        dt = 0.001;
+    int      StepEnd = 1000;
+    int     DumpStep = 50;
     omp_set_num_threads( NThread );
 
     // Read the number of particle
@@ -176,11 +180,8 @@ int main( int argc, char* argv[] ) {
     WriteParticle( tree, Npar, theta, "./Data_00000.dat");
 
     int DumIdx = 1;
-    for ( int i = 1; i < 101; i++ ) {
-        
-        double t = 0.001;
-        
-        tree_update( tree, t, g );
+    for (int Step=0; Step < StepEnd; Step++){
+        tree_update( tree, dt, g );
         for (int j = 0; j < Npar; j++) {
             Particle *cur_par = tree->partree_arr[j]->par;
             for (int k = 0; k < 3; k++)
@@ -188,7 +189,7 @@ int main( int argc, char* argv[] ) {
         }
         g = AccelTarget_tree( Npar, pos, h, tree, G, theta );
 
-        if (i % 10 == 0) {
+        if (Step % DumpStep == 0.0) {
             ostringstream DumpNum;
             DumpNum << setw(5) << setfill('0') << DumIdx;
             string DumpName = "Data_" + DumpNum.str() + ".dat";
@@ -203,7 +204,7 @@ int main( int argc, char* argv[] ) {
     printf("Wall time for building the tree (one step)              = %5.3e s\n", start2 - start1);
     printf("Wall time for calculating the potential (one step)      = %5.3e s\n", start3 - start2);
     printf("Wall time for calculating the acceleration (one step)   = %5.3e s\n", start4 - start3);
-    printf("Wall time for updating particles' position            = %5.3e s\n", end - start4   );
+    printf("Wall time for updating particles' position              = %5.3e s\n", end - start4   );
     printf("\n");
     printf("~ ~ ~ Done ~ ~ ~\n");
 
