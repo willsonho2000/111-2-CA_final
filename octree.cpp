@@ -15,6 +15,7 @@ int octant_offset[8][3] =  {{-1,-1,-1},
 
 Particle::Particle() {
     pos[0] = pos[1] = pos[2] = 0.;
+    vel[0] = vel[1] = vel[2] = 0.;
     mass = -1.;
     softening = -1.;
 }
@@ -22,6 +23,7 @@ Particle::Particle() {
 
 Particle::Particle( double* position, double m, double soft ) {
     for ( int i = 0; i < 3; i++ ) pos[i] = position[i];
+    vel[0] = vel[1] = vel[2] = 0.;
     mass = m;
     softening = soft;
 }
@@ -30,12 +32,14 @@ Particle::Particle( double a, double b, double c, double m, double soft ) {
     pos[0] = a;
     pos[1] = b;
     pos[2] = c;
+    vel[0] = vel[1] = vel[2] = 0.;
     mass = m;
     softening = soft;
 }
 
 Particle::Particle( int* position, double m, double soft ) {
     for ( int i = 0; i < 3; i++ ) pos[i] = position[i];
+    vel[0] = vel[1] = vel[2] = 0.;
     mass = m;
     softening = soft;
 }
@@ -44,17 +48,20 @@ Particle::Particle( int* position, double m, double soft ) {
 Octree::Octree( int N, double** points, double* masses, double* softening ) {
 
     this->par = nullptr;
-    // Assigning null to the children
+    // Assign nullptr to the children
     children.assign( 8, nullptr );
 
     this->root = this;
     this->Coordinates = new double[3]{0};
+    this->com         = new double[3]{0};  
     this->Quadrupoles = new double*[3];
     for ( int i = 0; i < 3; i++ ) this->Quadrupoles[i] = new double[3]{0.};
     this->NumNodes = N;
     this->Sizes = 0.;
     this->Softenings = 0.;
     this->Masses = 0.;
+    // Assign nullptr to the particle array (only do this for root node)
+    partree_arr.assign( N, nullptr );
 
     this->BuildTree( points, masses, softening );
     double mass, com[3], hmax; 
@@ -101,22 +108,26 @@ void Octree::Insert( Particle* new_par, int octant ) {
             // turn the node to a tree
             this->children[octant]->par = nullptr;
 
-            // set the tree Coordinates, quadrupoles and sizes
-            this->children[octant]->Sizes = this->Sizes/2.;
-            this->children[octant]->Coordinates = new double[3]{0.};
+            // set the tree's center of mass and quadrupoles
+            this->children[octant]->com = new double[3]{0.};
             this->children[octant]->Quadrupoles = new double*[3];
             for ( int i = 0; i < 3; i++ ) this->children[octant]->Quadrupoles[i] = new double[3]{0.};
 
-            // set the value of Coordinates
-            double* cur_coord = this->Coordinates;
-            double* child_coor = this->children[octant]->Coordinates;
-            for ( int i = 0; i < 3; i++ ) {
-                child_coor[i] = cur_coord[i] + this->Sizes*0.25*( double )octant_offset[octant][i];
-            }
-
             // put the pre-existing particle into the new tree
-            int child_octant = FindQuad( child_par->pos, child_coor );
+            int child_octant = FindQuad( child_par->pos, this->children[octant]->Coordinates );
             this->children[octant]->children[child_octant] = new Octree( child_par, this->root );
+            this->root->partree_arr[child_par->index] = this->children[octant]->children[child_octant];
+
+            // set the tree's coordinates and sizes
+            this->children[octant]->children[child_octant]->Sizes = this->children[octant]->Sizes/2.;
+            this->children[octant]->children[child_octant]->Coordinates = new double[3]{0.};
+
+            // set the value of Coordinates
+            double* cur_coord  = this->children[octant]->Coordinates;
+            double* child_coor = this->children[octant]->children[child_octant]->Coordinates;
+            for ( int i = 0; i < 3; i++ ) {
+                child_coor[i] = cur_coord[i] + this->children[octant]->Sizes*0.25*( double )octant_offset[child_octant][i];
+            }
             
             // insert new node in the new tree again
             int new_octant = FindQuad( new_par->pos, child_coor );
@@ -131,6 +142,17 @@ void Octree::Insert( Particle* new_par, int octant ) {
     else {
         // the child doesn't exist, so let the particle be the child
         this->children[octant] = new Octree( new_par, this->root );
+        this->root->partree_arr[new_par->index] = this->children[octant];
+
+        this->children[octant]->Sizes = this->Sizes/2.;
+        this->children[octant]->Coordinates = new double[3]{0.};
+
+        // set the value of Coordinates
+        double* cur_coord = this->Coordinates;
+        double* child_coor = this->children[octant]->Coordinates;
+        for ( int i = 0; i < 3; i++ ) {
+            child_coor[i] = cur_coord[i] + this->Sizes*0.25*( double )octant_offset[octant][i];
+        }
     }
 }
 
@@ -160,6 +182,8 @@ void Octree::BuildTree( double** points, double* masses, double* softenings ) {
 
         // delcare a new node then insert it
         Particle* i_par = new Particle( pos, masses[i], softenings[i] );
+        i_par->index = i;
+        // this->par_arr[i] = i_par;
 
         int i_octant = FindQuad( pos, this->Coordinates );
         this->Insert( i_par, i_octant );
