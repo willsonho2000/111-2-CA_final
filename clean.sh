@@ -1,1 +1,1 @@
-rm -rf Potential_* Particle.dat Accel_*
+rm -rf Potential_* Particle.dat Accel_* Projection_Par *.dat *.mp4

@@ -37,7 +37,6 @@ void remove_node (Octree* pre_node, int to_octant, Octree* tree, double* node_po
     }
 
     if (count == 0) {
-
         // remove
         delete[] tree->Coordinates;
         for( int i = 0; i < 3; i++ ){
@@ -82,6 +81,7 @@ void tree_update (Octree* tree, double timestep, double** g) {
         
         if ( reinsert ) {
             nod_target->par = nullptr;
+
             remove_node(nullptr, 0, tree, nod_target->Coordinates);
             
             int i_octant = tree->FindQuad( par_target->pos, tree->Coordinates );
