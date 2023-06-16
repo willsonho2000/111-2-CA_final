@@ -45,7 +45,7 @@ void remove_node (Octree* pre_node, int to_octant, Octree* tree, double* node_po
         }
         delete[] tree->Quadrupoles;
         delete[] tree->com;
-        target->children.clear();
+        tree->children.clear();
 
         delete tree;
         pre_node->children[to_octant] = nullptr;
