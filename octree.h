@@ -3,8 +3,10 @@
 
 struct Particle {
     double pos[3];
+    double vel[3];
     double mass;
     double softening;
+    int index;              // record the order in Particle.dat
 
     Particle();
     Particle( double* position, double m, double soft );
@@ -24,8 +26,10 @@ public:
     double Masses;          // set masses
 
     Octree* root;           // the root of the tree
-    double* Coordinates;    // the center of the grid
+    double* Coordinates;    // the center position of the grid
+    double* com;            // the center of mass of the grid
     double** Quadrupoles;   // set quadrapoles
+    std::vector<Octree*> partree_arr;  // set the tree of the particle's pointer
 
     // initialization an empty tree
     Octree( int N, double** points, double* masses, double* softening );
