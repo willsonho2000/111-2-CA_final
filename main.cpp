@@ -1,5 +1,7 @@
-#include <iostream>
 #include <cstdio>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
 #include <cstdlib>
 #include <fstream>
 #include <omp.h>
@@ -173,6 +175,7 @@ int main( int argc, char* argv[] ) {
 
     WriteParticle( tree, Npar, theta, "./Timestep00.dat");
 
+    int DumIdx = 1;
     for ( int i = 1; i < 101; i++ ) {
         
         double t = 0.001;
@@ -186,14 +189,12 @@ int main( int argc, char* argv[] ) {
         g = AccelTarget_tree( Npar, pos, h, tree, G, theta );
 
         if (i % 10 == 0) {
-            if (i < 100) {
-                WriteParticle( tree, Npar, theta, "./Timestep0" + to_string(i / 10) + ".dat");
-                std::cout << " Write  " << i/10 << "th timestep " << t*i << " s file.\n";
-            }
-            else {
-                WriteParticle( tree, Npar, theta, "./Timestep" + to_string(i / 10) + ".dat");
-                std::cout << " Write " << i/10 << "th timestep " << t*i << " s file.\n";
-            }
+            ostringstream DumpNum;
+            DumpNum << setw(5) << setfill('0') << DumIdx;
+            string DumpName = "Data_" + DumpNum.str() + ".dat";
+            WriteParticle( tree, Npar, theta, DumpName);
+            printf("Writing %s ...\n", DumpName.c_str());
+            DumIdx ++;
         }
     }
     double end   = omp_get_wtime();
