@@ -170,10 +170,10 @@ int main( int argc, char* argv[] ) {
     WritePot(phi, Npar, "./Potential_tree.dat");
     WriteAcc(g, Npar, "./Accel_tree.dat");
 
-    printf("The potential is saved to Potential_tree.dat.\n");
-    printf("The acceleration is saved to Accel_tree.dat. \n\n");
+    printf("The initial potential is saved to Potential_tree.dat.\n");
+    printf("The initial acceleration is saved to Accel_tree.dat. \n\n");
 
-    WriteParticle( tree, Npar, theta, "./Timestep00.dat");
+    WriteParticle( tree, Npar, theta, "./Data_00000.dat");
 
     int DumIdx = 1;
     for ( int i = 1; i < 101; i++ ) {
@@ -200,10 +200,10 @@ int main( int argc, char* argv[] ) {
     double end   = omp_get_wtime();
     
     printf("\n");
-    printf("Wall time for building the tree              = %5.3e s\n", start2 - start1);
-    printf("Wall time for calculating the potential      = %5.3e s\n", start3 - start2);
-    printf("Wall time for calculating the acceleration   = %5.3e s\n", start4 - start3);
-    printf("Wall time for evaluating particles' position = %5.3e s\n", end - start4   );
+    printf("Wall time for building the tree (one step)              = %5.3e s\n", start2 - start1);
+    printf("Wall time for calculating the potential (one step)      = %5.3e s\n", start3 - start2);
+    printf("Wall time for calculating the acceleration (one step)   = %5.3e s\n", start4 - start3);
+    printf("Wall time for updating particles' position            = %5.3e s\n", end - start4   );
     printf("\n");
     printf("~ ~ ~ Done ~ ~ ~\n");
 
