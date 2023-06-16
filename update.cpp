@@ -28,27 +28,27 @@ void remove_node (Octree* pre_node, int to_octant, Octree* tree, double* node_po
     }
     else {  // or, keep going to the next level
         remove_node(tree, octant, tree->children[octant], node_pos);
+    }
+    
+    // remove unecessary node
+    int count = 0;
+    for (int i = 0; i < 8; i++) {
+        if (tree->children[i] != nullptr) count++;
+    }
 
-        // remove unecessary node
-        int count = 0;
-        for (int i = 0; i < 8; i++) {
-            if (tree->children[i] != nullptr) count++;
+    if (count == 0) {
+
+        // remove
+        delete[] tree->Coordinates;
+        for( int i = 0; i < 3; i++ ){
+            delete[] tree->Quadrupoles[i];
         }
+        delete[] tree->Quadrupoles;
+        delete[] tree->com;
+        target->children.clear();
 
-        if (count == 0) {
-
-            // remove
-            delete[] tree->Coordinates;
-            for( int i = 0; i < 3; i++ ){
-                delete[] tree->Quadrupoles[i];
-            }
-            delete[] tree->Quadrupoles;
-            delete[] tree->com;
-            target->children.clear();
-
-            delete tree;
-            pre_node->children[to_octant] = nullptr;
-        }
+        delete tree;
+        pre_node->children[to_octant] = nullptr;
     }
 
     return;
